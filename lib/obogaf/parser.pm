@@ -191,7 +191,7 @@ __END__
 
 =head1 NAME
  
-obogaf::parser
+obogaf::parser - a perl5 module to handle obo and gaf file
 
 =head1 SYNOPSIS
 
