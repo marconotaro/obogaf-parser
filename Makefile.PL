@@ -1,17 +1,21 @@
 use 5.006;
 use ExtUtils::MakeMaker;
+use Module::Metadata;
 
 WriteMakefile(
     NAME             => 'obogaf::parser',
     VERSION_FROM     => 'lib/obogaf/parser.pm',
     ABSTRACT         => 'a perl5 module to handle obo and gaf file',
     AUTHOR           => 'Marco Notaro',
-    LICENSE          => 'Perl_5',
+    LICENSE          => 'perl_5',
     MIN_PERL_VERSION => '5.006',
     PREREQ_PM        => {
         'strict'   => 0,
         'warnings' => 0,
         'Graph'    => 0,
+    },
+    META_ADD         =>{
+        provides  => Module::Metadata->provides(version => '2', dir => 'lib'),
     },
     (eval { ExtUtils::MakeMaker->VERSION(6.46) } ? ( 
         META_MERGE => {
@@ -23,7 +27,7 @@ WriteMakefile(
                     url  => 'git://github.com/marconotaro/obogaf-parser.git',
                 },
             },
-            keywords => ['parser','obo', 'gaf', 'bio-ontology','annotations'],
+            keywords => ['parser', 'obo', 'gaf', 'bio-ontology', 'annotations'],
         }
     ) : () ),
 );

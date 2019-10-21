@@ -1,7 +1,7 @@
 package obogaf::parser;
 
 require 5.006;
-our $VERSION= '0.001'; 
+our $VERSION= '1.001'; 
 $VERSION= eval $VERSION;
 
 use strict;
@@ -171,7 +171,7 @@ sub map_OBOterm_between_release{
         }
     }
     close IN;
-    $fln = $header.$fln;
+    if(defined $header){$fln = $header.$fln;}
     ## print mapping stat
     $stat .= "Tot. ontology terms:\t$classes\nTot. altID:\t$alt\nTot. altID seen:\t$seen\nTot. altID unseen:\t$unseen\n";
     unless(not defined $pair){ 
@@ -209,9 +209,14 @@ $stat= make_stat(edgesfile, parentIndex, childIndex);
 
 ($res, $stat)= map_OBOterm_between_release(obofile, annfile, classIndex);
 
+=head1 ABSTRACT
+
+B<obogaf::parser> is a Perl5 module desinged to handle obo and gene association file. 
+
 =head1 DESCRIPTION
 
-B<obogaf::parser> is a perl5 module desinged to handle obo and gene association file. 
+B<obogaf::parser> is a Perl5 module specifically designed to handle GO and HPO obo (Open Biological and Biomedical Ontology) file and their Gene Annotation File (gaf file). However, all the B<obogaf::parser> subroutines can be safely used to parse any obo file listed in L<OBO foundry|http://www.obofoundry.org/> and any gene annotation file structured as those
+shown in L<GOA website|https://www.ebi.ac.uk/GOA/downloads> and L<HPO website|https://hpo.jax.org/app/download/annotation> (basically a I<csv> file using I<tab> as separator).
 
 =over 2
 
@@ -299,7 +304,7 @@ Marco Notaro (https://marconotaro.github.io)
 
 =head1 SEE ALSO
 
-A step-by-step tutorial showing how to apply B<obogaf::parser> to real case studies in Computational Biology and Precision Medicine is situated at the following link L<https://github.com/marconotaro/obogaf-parser>.
+A step-by-step tutorial showing how to apply B<obogaf::parser> to real biomedical case studies is available at the following link L<https://obogaf-parser.readthedocs.io>.
 
 =cut
 
