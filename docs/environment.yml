@@ -1,0 +1,7 @@
+channels:
+- defaults
+- perl
+dependencies:
+- sphinx
+- sphinx_rtd_theme
+
