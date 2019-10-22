@@ -2,5 +2,6 @@
 ^blib\/
 ^.git\/
 ^MYMETA.*
+^Makefile$
 .bak$
 _blib$
