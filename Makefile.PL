@@ -10,11 +10,18 @@ WriteMakefile(
     LICENSE          => 'perl_5',
     MIN_PERL_VERSION => '5.006',
     PREREQ_PM        => {
-        'strict'   => 0,
-        'warnings' => 0,
-        'Graph'    => 0,
+        'strict'           => 0,
+        'warnings'         => 0,
+        'Graph'            => 0 
     },
-    META_ADD         =>{
+    TEST_REQUIRES   => {
+        'Test::More'       => 0, 
+        'Test::Files'      => 0 
+    },
+    BUILD_REQUIRES  => {
+        'Module::Metadata' => 0 
+    },
+    META_ADD         => {
         provides  => Module::Metadata->provides(version => '2', dir => 'lib'),
     },
     (eval { ExtUtils::MakeMaker->VERSION(6.46) } ? ( 
