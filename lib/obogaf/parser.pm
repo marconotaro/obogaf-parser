@@ -1,7 +1,7 @@
 package obogaf::parser;
 
 require 5.006;
-our $VERSION= '1.001'; 
+our $VERSION= '1.002'; 
 $VERSION= eval $VERSION;
 
 use strict;
@@ -211,11 +211,11 @@ $stat= make_stat(edgesfile, parentIndex, childIndex);
 
 =head1 ABSTRACT
 
-B<obogaf::parser> is a Perl5 module desinged to handle obo and gene association file. 
+B<obogaf::parser> is a perl5 module desinged to handle open biological and biomedical ontology and gene association file. 
 
 =head1 DESCRIPTION
 
-B<obogaf::parser> is a Perl5 module specifically designed to handle GO and HPO obo (Open Biological and Biomedical Ontology) file and their Gene Annotation File (gaf file). However, all the B<obogaf::parser> subroutines can be safely used to parse any obo file listed in L<OBO foundry|http://www.obofoundry.org/> and any gene annotation file structured as those
+B<obogaf::parser> is a perl5 module specifically designed to handle GO and HPO obo (Open Biological and Biomedical Ontology) file and their Gene Annotation File (gaf file). However, all the B<obogaf::parser> subroutines can be safely used to parse any obo file listed in L<OBO foundry|http://www.obofoundry.org/> and any gene annotation file structured as those
 shown in L<GOA website|https://www.ebi.ac.uk/GOA/downloads> and L<HPO website|https://hpo.jax.org/app/download/annotation> (basically a I<csv> file using I<tab> as separator).
 
 =over 2
