@@ -3,11 +3,11 @@
 Tutorial
 ========
 
-Here we show a step-by-step application of ``obogaf::parser`` by using the Gene Ontology (``GO``) and the Human Phenotype Ontology (``HPO``) and their respective annotation file. The snippets of Perl code shown in the examples below are glued together respectively in the script ``GOscript.pl`` and ``HPOscript.pl`` stored in ``script`` folder of this repository.
+Here we show a step-by-step application of ``obogaf::parser`` by using the Gene Ontology (``GO``) and the Human Phenotype Ontology (``HPO``) and their respective annotation file. The snippets of Perl code shown in the examples below are glued together respectively in the script ``GOscript.pl`` and ``HPOscript.pl`` stored in ``script`` folder of the github repository (`link <https://github.com/marconotaro/obogaf-parser/tree/master/script/>`__.).
 
 ----
 
-The experiments run on this tutorial were executed by using the ``obogaf::parser`` version ``1.001``, the Perl version ``5.22.1`` and on a machine having Ubuntu 16.04 as operative system.
+The experiments run on this tutorial were executed by using the ``obogaf::parser`` version ``1.002``, the Perl version ``5.22.1`` and on a machine having Ubuntu 16.04 as operative system.
 
 ----
 
@@ -18,7 +18,7 @@ For all the examples shown in this tutorial, we store I/O files in the directory
 
 .. code-block:: bash
 
-   $ mkdir -p example/data  ## create a directory if it does not already exist
+   $ cd ~ && mkdir -p example/data  ## create a directory if it does not already exist
 
 Parse the GO obo file
 ~~~~~~~~~~~~~~~~~~~~~

@@ -85,11 +85,20 @@ To build ``obogaf::parser`` from scratch follow the command shown below:
   $ make;
   $ make test;
   $ sudo make install;
-  $ make dist;
-  $ make clean;
+  $ make veryclean; ## to clean built files
+
+Dependencies
+==============
 
 For building ``obogaf::parser`` you will need the following dependencies
 
  - Perl (v 5.22.1)
  - Perl-module:
-    - Graph - graph data structures and algorithms (v 0.9704)
+    - Graph - graph data structures and algorithms
+
+    
+    
+    
+
+
+
