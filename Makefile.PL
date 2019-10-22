@@ -10,19 +10,22 @@ WriteMakefile(
     LICENSE          => 'perl_5',
     MIN_PERL_VERSION => '5.006',
     PREREQ_PM        => {
-        'strict'           => 0,
-        'warnings'         => 0,
         'Graph'            => 0 
     },
-    TEST_REQUIRES   => {
+    TEST_REQUIRES  => {
         'Test::More'       => 0, 
         'Test::Files'      => 0 
     },
-    BUILD_REQUIRES  => {
-        'Module::Metadata' => 0 
+    CONFIGURE_REQUIRES  => {
+        'Module::Metadata' => 0,
     },
     META_ADD         => {
         provides  => Module::Metadata->provides(version => '2', dir => 'lib'),
+    },
+    clean   => {
+        FILES   => "t/data/test_chicken_goa_mapped.txt              
+                    t/data/test_chicken.uniprot2go.txt
+                    t/data/test_gobasic_edgesMF.txt"
     },
     (eval { ExtUtils::MakeMaker->VERSION(6.46) } ? ( 
         META_MERGE => {

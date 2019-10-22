@@ -1,3 +1,11 @@
+#### obogaf::parser 1.003
+
+###### CHANGES
+- improved Makefile.PL:
+    - added clean attribute
+    - added CONFIGURE_REQUIRES
+- improved MANIFEST.SKIP
+
 #### obogaf::parser 1.002
 
 ###### CHANGES
@@ -12,4 +20,4 @@
 
 #### obogaf::parser 0.001
 
-###### MODULE GENESIS
+###### MODULE GENESIS (development version)
