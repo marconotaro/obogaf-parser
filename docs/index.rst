@@ -6,7 +6,7 @@
 Welcome to obogaf::parser's documentation!
 ==========================================
 
-``obogaf::parser`` is a Perl5 module designed to handle **GO** and **HPO** obo file and their gene annotation file (gaf file). However, all the ``obogaf::parser`` subroutines can be safely used to parse any *obo* file listed in `OBO foundry <http://www.obofoundry.org/>`_ and any gene *annotation* file structured as those shown in `GOA website <https://www.ebi.ac.uk/GOA/downloads>`_ and `HPO website <https://hpo.jax.org/app/download/annotation>`_ -- basically a ``csv`` file using ``tab`` as separator). 
+``obogaf::parser`` is a perl5 module designed to handle **GO** and **HPO** obo file and their gene annotation file (gaf file). However, all the ``obogaf::parser`` subroutines can be safely used to parse any *obo* file listed in `OBO foundry <http://www.obofoundry.org/>`_ and any gene *annotation* file structured as those shown in `GOA website <https://www.ebi.ac.uk/GOA/downloads>`_ and `HPO website <https://hpo.jax.org/app/download/annotation>`_ -- basically a ``csv`` file using ``tab`` as separator). 
 
 Subroutines contained in ``obogaf::parser``:
 
