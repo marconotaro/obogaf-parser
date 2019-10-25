@@ -101,8 +101,7 @@ sub gene2biofun{
     my (%gene2biofun, @genes, @biofun, $stat)= ();
     my ($sample, $oboterm)= (0)x2;
     if ($annfile =~ /.gz$/){ 
-        open FH, "<:gzip", $annfile or die "cannot open $annfile. $!.\n"; ## new: should be faster on large zipped file 
-        # open FH, "gunzip -c $annfile |" or die "cannot open $annfile. $!\n"; ## old gunzip solution 
+        open FH, "<:gzip", $annfile or die "cannot open $annfile. $!.\n";
     }else{ 
         open FH, "<", "$annfile" or die "cannot open $annfile. $!.\n";
     }
@@ -142,8 +141,7 @@ sub map_OBOterm_between_release{
     $alt= keys(%altid);
     # step 1: storing old ontology terms in a hash
     if ($annfile =~ /.gz$/){ 
-        open FH, "<:gzip", $annfile or die "cannot open $annfile. $!.\n"; ## new: should be faster on large zipped file 
-        # open FH, "gunzip -c $annfile |" or die "cannot open $annfile. $!\n"; ## old gunzip solution 
+        open FH, "<:gzip", $annfile or die "cannot open $annfile. $!.\n";  
     }else{ 
         open FH, "<", "$annfile" or die "cannot open $annfile. $!.\n";
     }
@@ -173,8 +171,7 @@ sub map_OBOterm_between_release{
     }
     ## step 3: substitute ALT-ID with the updated ID, then the annotation file is returned.
     if ($annfile =~ /.gz$/){ 
-        open FH, "<:gzip", $annfile or die "cannot open $annfile. $!.\n"; ## new: should be faster on large zipped file 
-        # open FH, "gunzip -c $annfile |" or die "cannot open $annfile. $!\n"; ## old gunzip solution 
+        open FH, "<:gzip", $annfile or die "cannot open $annfile. $!.\n";  
     }else{ 
         open FH, "<", "$annfile" or die "cannot open $annfile. $!.\n";
     }
