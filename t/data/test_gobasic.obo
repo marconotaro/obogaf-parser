@@ -23,28 +23,24 @@ remark: Includes Ontology(OntologyID(OntologyIRI(<http://purl.obolibrary.org/obo
 ontology: go
 
 [Term]
-id: GO:0001227
-name: DNA-binding transcription repressor activity, RNA polymerase II-specific
-namespace: molecular_function
-alt_id: GO:0001078
-alt_id: GO:0001206
-alt_id: GO:0001210
-alt_id: GO:0001214
-def: "A protein or a member of a complex that interacts selectively and non-covalently with a specific DNA sequence (sometimes referred to as a motif) within the regulatory region of a RNA polymerase II-transcribed gene to repress or decrease transcription. Regulatory regions include promoters (proximal and distal) and enhancers. Genes are transcriptional units." [GOC:txnOH-2018]
-comment: Changed term label and definition https://github.com/geneontology/go-ontology/issues/16131 and https://github.com/geneontology/go-ontology/issues/16152\nMerge terms see https://github.com/geneontology/go-ontology/issues/16534
-synonym: "distal enhancer DNA-binding transcription repressor activity, RNA polymerase II-specific" NARROW []
-synonym: "metal ion regulated core promoter proximal region sequence-specific DNA binding RNA polymerase II transcription factor activity involved in negative regulation of transcription" NARROW []
-synonym: "metal ion regulated sequence-specific DNA binding transcription factor activity involved in negative regulation of transcription" NARROW []
-synonym: "proximal promoter DNA-binding transcription repressor activity, RNA polymerase II-specific" NARROW []
-synonym: "RNA polymerase II core promoter proximal region sequence-specific DNA binding transcription factor activity involved in negative regulation of transcription" NARROW []
-synonym: "RNA polymerase II distal enhancer sequence-specific DNA-binding transcription factor activity involved in negative regulation of transcription" NARROW []
-synonym: "RNA polymerase II transcription regulatory region sequence-specific DNA binding transcription factor activity involved in negative regulation of transcription" EXACT []
-synonym: "RNA polymerase II transcriptional repressor activity, metal ion regulated core promoter proximal region sequence-specific binding" NARROW []
-synonym: "RNA polymerase II transcriptional repressor activity, metal ion regulated proximal promoter sequence-specific DNA binding" NARROW []
-synonym: "sequence-specific distal enhancer binding RNA polymerase II transcription factor activity involved in negative regulation of transcription" NARROW []
-synonym: "transcriptional repressor activity, metal ion regulated sequence-specific DNA binding" NARROW []
-synonym: "transcriptional repressor activity, RNA polymerase II distal enhancer sequence-specific binding" NARROW []
-synonym: "transcriptional repressor activity, RNA polymerase II proximal promoter sequence-specific DNA binding" NARROW []
-synonym: "transcriptional repressor activity, RNA polymerase II transcription regulatory region sequence-specific DNA binding" EXACT []
-is_a: GO:0000981 ! DNA-binding transcription factor activity, RNA polymerase II-specific
-is_a: GO:0001217 ! DNA-binding transcription repressor activity
+id: GO:0007260
+name: tyrosine phosphorylation of STAT protein
+namespace: biological_process
+alt_id: GO:0042502
+alt_id: GO:0042503
+alt_id: GO:0042504
+alt_id: GO:0042505
+alt_id: GO:0042506
+alt_id: GO:0042507
+alt_id: GO:0042508
+def: "The process of introducing a phosphate group to a tyrosine residue of a STAT (Signal Transducer and Activator of Transcription) protein." [GOC:jl, PMID:10918594]
+synonym: "tyrosine phosphorylation of Stat1 protein" NARROW []
+synonym: "tyrosine phosphorylation of Stat2 protein" NARROW []
+synonym: "tyrosine phosphorylation of Stat3 protein" NARROW []
+synonym: "tyrosine phosphorylation of Stat4 protein" NARROW []
+synonym: "tyrosine phosphorylation of Stat5 protein" NARROW []
+synonym: "tyrosine phosphorylation of Stat6 protein" NARROW []
+synonym: "tyrosine phosphorylation of Stat7 protein" NARROW []
+is_a: GO:0018108 ! peptidyl-tyrosine phosphorylation
+relationship: part_of GO:0007259 ! receptor signaling pathway via JAK-STAT
+
