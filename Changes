@@ -1,10 +1,11 @@
 #### obogaf::parser 1.014
 
 ###### CHANGES
-- improved obogaf::parser 
+- improved obogaf::parser module
 - added much more test cases
 - added Test::Files dependencies (to fix CPAN issues)
 - added regex in MANIFEST.SKIP
+- improved Makefile.PL
 
 #### obogaf::parser 1.003
 
