@@ -17,10 +17,7 @@ WriteMakefile(
     TEST_REQUIRES  => {
         'Test::More'            => 0, 
         'Test::Exception'       => 0,
-        'Test::Files'           => 0,
-            'Algorithm::Diff'       => 0,   ## Test::Files dependency    
-            'Test::Builder'         => 0,   ## Test::Files dependency
-            'Text::Diff'            => 0    ## Test::Files dependency
+        'Test::Files'           => 0
     },
     CONFIGURE_REQUIRES  => {
         'Module::Metadata'      => 0,
@@ -32,8 +29,10 @@ WriteMakefile(
     clean   => {
         FILES   => "t/data/test_gobasic_no_namespace.obo
                     t/data/test_gobasic_edges.txt
-                    t/data/test_gobasic_edges_hack.txt
+                    t/data/test_gobasic_edges_no_namespace.txt
                     t/data/test_gobasic_edgesBP.txt
+                    t/data/test_gobasic_edges_dead.txt
+                    t/data/test_gobasic_edges_stat.txt
                     t/data/test_chicken.uniprot2go.txt
                     t/data/test_goa_chicken_header.gaf
                     t/data/test_chicken_uniprot2go_header.txt
