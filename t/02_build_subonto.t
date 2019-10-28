@@ -33,17 +33,16 @@ close $fh;
 file_ok($gobp, "GO:0018108\tGO:0007260\tis-a\nGO:0007259\tGO:0007260\tpart-of\n", "test that build_subonto works");
 
 ## test dead case 
-my $edges_hack= "t/data/test_gobasic_edges_hack.txt";
-open $fh, ">", $edges_hack;
+my $edges_dead= "t/data/test_gobasic_edges_dead.txt";
+open $fh, ">", $edges_dead;
 open FH, "<", $goedges;
 while(<FH>){
-    if($.<2){print $fh "\n"};
     my @vals= split(/\t/,$_);
     print $fh join("\t", @vals[1..$#vals]);
 } 
 close FH;
 close $fh;
-dies_ok ( sub { my $file = obogaf::parser::build_subonto($edges_hack, $domain) }, 'die: wrong column number');
+dies_ok ( sub { my $file = obogaf::parser::build_subonto($edges_dead, $domain) }, 'die: wrong column number');
 
 done_testing();
 
