@@ -1,3 +1,9 @@
-README
 cover_db/*
 script/example/*
+t/data/*
+blib/*
+pm_to_blib
+README
+MYMETA*
+Makefile
+codecov.sh
