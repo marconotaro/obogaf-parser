@@ -11,7 +11,7 @@ Welcome to obogaf::parser's documentation!
 Subroutines contained in ``obogaf::parser``:
 
 - **build_edges**: extract edges from an ``obo`` file;
-- **build_subonto**: extract edges for a specified subontology domain;
+- **build_subonto**: extract edges for a specific subontology domain;
 - **make_stat**: make basic statistic on a graph;
 - **gene2biofun**: build the annotations list from a gaf file;
 - **map_OBOterm_between_release**: map ontology terms between releases;

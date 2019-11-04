@@ -7,7 +7,7 @@ Here we show a step-by-step application of ``obogaf::parser`` by using the Gene 
 
 ----
 
-The experiments run on this tutorial were executed by using the ``obogaf::parser`` version ``1.002``, the Perl version ``5.22.1`` and on a machine having Ubuntu 16.04 as operative system.
+The experiments run on this tutorial were executed by using the ``obogaf::parser`` version ``1.016``, the Perl version ``5.22.1`` and on a machine having Ubuntu 16.04 as operative system.
 
 ----
 
