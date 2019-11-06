@@ -1,6 +1,8 @@
 # Welcome to obogaf::parser's perl5 module! 
 
 [![License: Perl5](https://img.shields.io/badge/License-Perl-0298c3.svg)](https://dev.perl.org/licenses/)
+[![Anaconda-Server Badge](https://anaconda.org/bioconda/perl-obogaf-parser/badges/installer/conda.svg)](https://anaconda.org/bioconda/perl-obogaf-parser)
+[![codecov](https://codecov.io/gh/marconotaro/obogaf-parser/branch/master/graph/badge.svg)](https://codecov.io/gh/marconotaro/obogaf-parser)
 
 ``obogaf::parser`` is a perl5 module to parse *obo* (Open Biological and Biomedical Ontology) and *gaf* (Gene Annotation File) file.
 
