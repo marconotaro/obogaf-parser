@@ -14,7 +14,7 @@ use File::Path qw(make_path);
 
 ## create folder where storing example I/O files
 use File::Path qw(make_path);
-my $basedir= "../example/GOdata/";
+my $basedir= "example/data/";
 make_path($basedir) unless(-d $basedir);
 
 ## note: if you want to store data in your home, use File::HomeDir
@@ -23,7 +23,7 @@ make_path($basedir) unless(-d $basedir);
 # mkdir $basedir unless(-e $basedir);
 
 ## declare variables 
-my ($res, $stat, $parentIndex, $childIndex, $geneindex, $classindex); 
+my ($res, $stat, $parentIndex, $childIndex, $geneindex, $classindex, $parlist, $pares, $chdlist, $chdres); 
 
 ## ~~ GO OBO ~~ ## 
 ## download GO obo file
@@ -34,9 +34,9 @@ print "GO obo file downloaded: done\n\n";
 ## extract edges from GO obo file
 my $gores= obogaf::parser::build_edges($obofile);
 my $goedges= $basedir."gobasic-edges.txt"; ## go edges file declared here 
-open OUT, "> $goedges"; 
-print OUT "${$gores}"; ## scalar dereferencing
-close OUT;
+open FH, "> $goedges"; 
+print FH "${$gores}"; ## scalar dereferencing
+close FH;
 print "build GO edges: done\n\n";
 
 ## extract GO subontology nodes and relationships
@@ -45,10 +45,10 @@ my %aspects= (biological_process => "BP", molecular_function => "MF", cellular_c
 
 foreach my $domain (@domains){
     my $outfile= $basedir."gobasic-edges"."$aspects{$domain}".".txt";
-    open OUT, "> $outfile";
+    open FH, "> $outfile";
     my $domainres= obogaf::parser::build_subonto($goedges, $domain);
-    print OUT "${$domainres}";
-    close OUT;
+    print FH "${$domainres}";
+    close FH;
 }
 print "build edges for each GO subontology: done\n\n";
 
@@ -65,6 +65,36 @@ $res= obogaf::parser::make_stat($goedgesbp, $parentIndex, $childIndex);
 print "$res";
 print "\nGO BP stats: done\n\n";
 
+## compute parents and children list (whole ontology)
+$parlist= $basedir."gobasic-parGO.txt";
+$pares= obogaf::parser::get_parents_or_children_list($goedges, 1,2, "parents");
+open FH, "> $parlist";
+foreach my $k (sort{$a cmp $b} keys %$pares) { print FH "$k $$pares{$k}\n";} ## parents  list
+close FH;
+
+$chdlist= $basedir."gobasic-chdGO.txt";
+$chdres= obogaf::parser::get_parents_or_children_list($goedges, 1,2, "children");
+open FH, "> $chdlist";
+foreach my $k (sort{$a cmp $b} keys %$chdres) { print FH "$k $$chdres{$k}\n";} ## children list
+close FH;
+
+print "\nGO parents/children list: done\n\n";
+
+## compute parents and children list (GO-BP subontology)
+$parlist= $basedir."gobasic-parGO-BP.txt";
+$pares= obogaf::parser::get_parents_or_children_list($goedgesbp, 0,1, "parents");
+open FH, "> $parlist";
+foreach my $k (sort{$a cmp $b} keys %$pares) { print FH "$k $$pares{$k}\n";} ## parents  list
+close FH;
+
+$chdlist= $basedir."gobasic-chdGO-BP.txt";
+$chdres= obogaf::parser::get_parents_or_children_list($goedgesbp, 0,1, "children");
+open FH, "> $chdlist";
+foreach my $k (sort{$a cmp $b} keys %$chdres) { print FH "$k $$chdres{$k}\n";} ## children list
+close FH;
+
+print "\nGO BP parents/children list: done\n\n";
+
 ## ~~ GOA ANNOTATION ~~ ##
 ## download GO annotation from GOA database (CHICKEN organism)
 my $goafile= $basedir."goa_chicken.gaf.gz"; ## goa annotation file declared here
@@ -74,9 +104,9 @@ my $goachicken= qx{wget --output-document=$goafile ftp://ftp.ebi.ac.uk/pub/datab
 ($geneindex, $classindex)= (1, 4);
 ($res, $stat)= obogaf::parser::gene2biofun($goafile, $geneindex, $classindex);
 my $goaout= $basedir."chicken.uniprot2go.txt";
-open OUT, "> $goaout";
-foreach my $k (sort{$a cmp $b} keys %$res) { print OUT "$k $$res{$k}\n";} ## dereferencing
-close OUT;
+open FH, "> $goaout";
+foreach my $k (sort{$a cmp $b} keys %$res) { print FH "$k $$res{$k}\n";} ## dereferencing
+close FH;
 print "${$stat}\n";
 print "build GOA annotations (CHICKEN): done\n\n";
 
@@ -88,9 +118,9 @@ my $goachickenOld= qx{wget --output-document=$goafileOld ftp://ftp.ebi.ac.uk/pub
 ## map GO terms between release
 ($res, $stat)= obogaf::parser::map_OBOterm_between_release($obofile, $goafileOld, $classindex);
 my $mapfile= $basedir."chicken.goa.mapped.txt";
-open OUT, "> $mapfile"; 
-print OUT "${$res}";
-close OUT;
+open FH, "> $mapfile"; 
+print FH "${$res}";
+close FH;
 print "${$stat}";
 
 ## ~~ ELAPSED TIME ~~ ## 

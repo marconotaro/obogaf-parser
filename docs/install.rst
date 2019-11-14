@@ -15,7 +15,7 @@ Installation via Conda
 
   This is the recommended way of installing for normal users.
 
-This is the recommended way to install ``obogaf::parser`` because it will enables you to switch software versions easily. And in addition Perl with all needed dependencies will be installed.
+This is the recommended way to install ``obogaf::parser`` because it will enables you to switch software versions easily and in addition Perl with all needed dependencies will be installed.
 
 First, you have to install the Miniconda Python3 distribution. See `here <https://conda.io/docs/install/quick.html>`_ for installation instructions. Make sure to ...
 
@@ -26,9 +26,9 @@ Then, you can install ``obogaf::parser`` with
 
 .. code-block:: console
 
-  TODO 
+  conda install -c bioconda perl-obogaf-parser 
 
-from the `Bioconda <https://bioconda.github.io>`_ channel.
+from the `Bioconda <https://anaconda.org/bioconda/perl-obogaf-parser>`_ channel.
 
 Global Installation
 ========================
@@ -92,13 +92,20 @@ Dependencies
 
 For building ``obogaf::parser`` you will need the following dependencies
 
- - Perl (v 5.22.1)
- - Perl-module:
+ - Perl (v5.22.1)
+ - Perl Module:
     - Graph - graph data structures and algorithms
+    - PerlIO::gzip - Perl extension to provide a PerlIO layer to gzip/gunzip
+ 
+ - Test Module:
+    - Test::More - yet another framework for writing test scripts
+    - Test::Exception - Test exception-based code
+    - Test::Files - A Test::Builder based module to ease testing with files and dirs
 
-    
-    
-    
+ - Configure Module:
+    - Module::Metadata - Gather package and POD information from perl module files
+    - ExtUtils::MakeMaker - Create a module Makefile
+
 
 
 

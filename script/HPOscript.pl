@@ -14,7 +14,7 @@ use File::Path qw(make_path);
 
 ## create folder where storing example I/O files
 use File::Path qw(make_path);
-my $basedir= "../example/HPOdata/";
+my $basedir= "example/data/";
 make_path($basedir) unless(-d $basedir);
 
 ## note: if case you want to store data in your home, use File::HomeDir
@@ -23,7 +23,7 @@ make_path($basedir) unless(-d $basedir);
 # mkdir $basedir unless(-e $basedir);
  
 ## declare variables 
-my ($res, $stat, $parentIndex, $childIndex, $geneindex, $classindex); 
+my ($res, $stat, $parentIndex, $childIndex, $geneindex, $classindex, $parlist, $pares, $chdlist, $chdres); 
 
 ## ~~ HPO OBO ~~ ## 
 ## download HPO obo file
@@ -34,9 +34,9 @@ print "HPO obo file downloaded: done\n\n";
 ## extract edges from HPO obo file
 my $hpores= obogaf::parser::build_edges($obofile);
 my $hpoedges= $basedir."hpo-edges.txt"; ## hpo edges file declared here 
-open OUT, "> $hpoedges"; 
-print OUT "${$hpores}"; ## scalar dereferencing
-close OUT;
+open FH, "> $hpoedges"; 
+print FH "${$hpores}"; ## scalar dereferencing
+close FH;
 print "build HPO edges: done\n\n";
 
 ## make stats on HPO 
@@ -44,6 +44,21 @@ print "build HPO edges: done\n\n";
 $res= obogaf::parser::make_stat($hpoedges, $parentIndex, $childIndex);
 print "$res";
 print "\nHPO stats: done\n\n";
+
+## compute parents and children list on HPO ontology
+$parlist= $basedir."gobasic-parHPO.txt";
+$pares= obogaf::parser::get_parents_or_children_list($hpoedges, 0,1, "parents");
+open FH, "> $parlist";
+foreach my $k (sort{$a cmp $b} keys %$pares) { print FH "$k $$pares{$k}\n";} ## parents  list
+close FH;
+
+$chdlist= $basedir."gobasic-chdHPO.txt";
+$chdres= obogaf::parser::get_parents_or_children_list($hpoedges, 0,1, "children");
+open FH, "> $chdlist";
+foreach my $k (sort{$a cmp $b} keys %$chdres) { print FH "$k $$chdres{$k}\n";} ## children list
+close FH;
+
+print "\nHPO parents/children list: done\n\n";
 
 ## ~~ HPO ANNOTATION ~~ ## 
 ## download HPO annotations 
@@ -54,9 +69,9 @@ my $hpoann= qx{wget --output-document=$hpofile http://compbio.charite.de/jenkins
 ($geneindex, $classindex)= (1,3);
 ($res, $stat)= obogaf::parser::gene2biofun($hpofile, $geneindex, $classindex);
 my $hpout= $basedir."hpo.gene2pheno.txt";
-open OUT, "> $hpout";
-foreach my $k (sort{$a cmp $b} keys %$res) { print OUT "$k $$res{$k}\n";} ## dereferencing
-close OUT;
+open FH, "> $hpout";
+foreach my $k (sort{$a cmp $b} keys %$res) { print FH "$k $$res{$k}\n";} ## dereferencing
+close FH;
 print "${$stat}\n";
 print "build HPO annotations: done\n\n";
 
@@ -68,9 +83,9 @@ my $hpold= qx{wget --output-document=$hpofileOld http://compbio.charite.de/jenki
 ## map HPO terms between release
 ($res, $stat)= obogaf::parser::map_OBOterm_between_release($obofile, $hpofileOld, 3);
 my $mapfile= $basedir."hpo.ann.mapped.txt";
-open OUT, "> $mapfile"; 
-print OUT "${$res}";
-close OUT;
+open FH, "> $mapfile"; 
+print FH "${$res}";
+close FH;
 print "${$stat}";
 
 ## ~~ ELAPSED TIME ~~ ## 
