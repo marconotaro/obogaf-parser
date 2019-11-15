@@ -1,7 +1,7 @@
 package obogaf::parser;
 
 require 5.006;
-our $VERSION= '1.27'; 
+our $VERSION= '1.271'; 
 $VERSION= eval $VERSION;
 
 use strict;
