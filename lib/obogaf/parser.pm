@@ -25,7 +25,7 @@ sub build_edges{
             $destination=$1;
         }elsif($_=~/^is_a:\s+(\D+\d+)/){
             $source=$1;
-            if($_=~/!\s+(.+)/){$isname=$1} # uncoverable branch false (by def. in accordance with obo file format)
+            ($isname)= ($_=~/!\s+(.+)/);
             if(defined $namespace){ 
                 $res .= "$namespace\t$source\t$destination\t$isname\t$idname\tis-a\n"; 
             }else{ 
@@ -33,7 +33,7 @@ sub build_edges{
             }
         }elsif($_=~/^relationship: part_of\s+(\D+\d+)/){
             $pof=$1;
-            if($_=~/!\s+(.+)/){$pofname=$1} # uncoverable branch false (by def. in accordance with obo file format)
+            ($pofname)= ($_=~/!\s+(.+)/);
             if(defined $namespace){
                 $res .= "$namespace\t$pof\t$destination\t$pofname\t$idname\tpart-of\n"; 
             }else{ 
