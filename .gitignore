@@ -6,7 +6,6 @@ dev/
 docs/_build/
 docs/_static/
 pm_to_blib
-README
 MYMETA*
 MANIFEST
 Makefile
