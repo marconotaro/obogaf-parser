@@ -11,6 +11,7 @@ WriteMakefile(
     MIN_PERL_VERSION => '5.006',
     PREREQ_PM        => {
         'Graph'             => 0,
+        'IO::File'          => 0,
         'PerlIO::gzip'      => 0,
         'List::MoreUtils'   => 0
     },

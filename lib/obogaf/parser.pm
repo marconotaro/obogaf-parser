@@ -22,6 +22,7 @@ use strict;
 use warnings;
 use Graph;
 use List::MoreUtils qw(uniq);
+use IO::File;
 use PerlIO::gzip;
 
 sub build_edges{
