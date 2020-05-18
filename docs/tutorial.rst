@@ -7,18 +7,18 @@ Here we show a step-by-step application of ``obogaf::parser`` by using the Gene 
 
 ----
 
-The experiments run on this tutorial were executed by using the ``obogaf::parser`` version ``1.27``, the Perl version ``5.22.1`` and on a machine having Ubuntu 16.04 as operative system.
+The experiments run on this tutorial were executed by using the ``obogaf::parser`` version ``1.373``, the Perl version ``5.26.1`` and on a machine having Ubuntu 18.04 as operative system.
 
 ----
 
 Application to the Gene Ontology (GO)
 -------------------------------------
 
-For all the examples shown in this tutorial, we store I/O files in the directory ``example/data``: 
+For all the examples shown in this tutorial, we store I/O files in the directory ``data``: 
 
 .. code-block:: bash
 
-   $ cd ~ && mkdir -p example/data  ## create a directory if it does not already exist
+   $ cd ~ && mkdir -p data/  ## create a directory if it does not already exist
 
 Parse the GO obo file
 ~~~~~~~~~~~~~~~~~~~~~
@@ -27,9 +27,9 @@ First of all we must download the *obo* file from the `Gene Ontoloy website <htt
 
 .. code-block:: bash
 
-   $ cd example/data && wget http://purl.obolibrary.org/obo/go/go-basic.obo -O gobasic.obo
+   $ cd data/ && wget http://purl.obolibrary.org/obo/go/go-basic.obo -O gobasic.obo
 
-Let's have a look to the ``gobasic.obo`` (release ``2019-10-07``) file to see how it is structured. For instance, to display the first ``60`` lines we can type on the Linux Shell ``head -n60 example/data/gobasic.obo``:
+Let's have a look to the ``gobasic.obo`` (release ``2019-10-07``) file to see how it is structured. For instance, to display the first ``60`` lines we can type on the Linux Shell ``head -n60 data/gobasic.obo``:
 
 .. code-block:: text
 
@@ -96,21 +96,120 @@ Let's have a look to the ``gobasic.obo`` (release ``2019-10-07``) file to see ho
 
    ... to be continued ...
 
+Let's imagine we would like to shrink the ``gobasic.obo`` file to a subset of terms we are interested in. What we have to do is storing the ``obo`` terms that we want to isolate in a plain text file and calling the ``obo_filter`` subroutine:
+
+.. code-block:: perl
+   
+   ## store in a plain file the list of GO terms
+   my @terms = qw(GO:0000002 GO:0000003 GO:0000018 GO:0000030 GO:0000038);
+   my $termsfile= "data/goterms.txt";
+   open OUT, "> $termsfile";
+   foreach my $go (@terms){print OUT "$go\n";}
+   close OUT;
+
+   ## shrink GO obo file to our list of terms
+   $res= obo_filter($obofile, $termsfile);
+   my $newobo= "data/go-shrunk.obo"; 
+   open OUT, ">", $newobo; 
+   print OUT "${$res}";
+   close OUT;
+
+The returned narrowed ``obo`` file looks as the following:
+
+.. code-block:: text
+
+   format-version: 1.2
+   data-version: releases/2019-10-07
+   subsetdef: gocheck_do_not_annotate "Term not to be used for direct annotation"
+   subsetdef: gocheck_do_not_manually_annotate "Term not to be used for direct manual annotation"
+   subsetdef: goslim_agr "AGR slim"
+   subsetdef: goslim_aspergillus "Aspergillus GO slim"
+   subsetdef: goslim_candida "Candida GO slim"
+   subsetdef: goslim_chembl "ChEMBL protein targets summary"
+   subsetdef: goslim_flybase_ribbon "FlyBase Drosophila GO ribbon slim"
+   subsetdef: goslim_generic "Generic GO slim"
+   subsetdef: goslim_metagenomics "Metagenomics GO slim"
+   subsetdef: goslim_mouse "Mouse GO slim"
+   subsetdef: goslim_pir "PIR GO slim"
+   subsetdef: goslim_plant "Plant GO slim"
+   subsetdef: goslim_pombe "Fission yeast GO slim"
+   subsetdef: goslim_synapse "synapse GO slim"
+   subsetdef: goslim_yeast "Yeast GO slim"
+   synonymtypedef: syngo_official_label "label approved by the SynGO project"
+   synonymtypedef: systematic_synonym "Systematic synonym" EXACT
+   default-namespace: gene_ontology
+   remark: cvs version: use data-version
+   remark: Includes Ontology(OntologyID(OntologyIRI(<http://purl.obolibrary.org/obo/go/never_in_taxon.owl>))) [Axioms: 18 Logical Axioms: 0]
+   ontology: go
+
+   [Term]
+   id: GO:0000002
+   name: mitochondrial genome maintenance
+   namespace: biological_process
+   def: "The maintenance of the structure and integrity of the mitochondrial genome; includes replication and segregation of the mitochondrial chromosome." [GOC:ai, GOC:vw]
+   is_a: GO:0007005 ! mitochondrion organization
+
+   [Term]
+   id: GO:0000003
+   name: reproduction
+   namespace: biological_process
+   alt_id: GO:0019952
+   alt_id: GO:0050876
+   def: "The production of new individuals that contain some portion of genetic material inherited from one or more parent organisms." [GOC:go_curators, GOC:isa_complete, GOC:jl, ISBN:0198506732]
+   subset: goslim_agr
+   subset: goslim_chembl
+   subset: goslim_flybase_ribbon
+   subset: goslim_generic
+   subset: goslim_pir
+   subset: goslim_plant
+   synonym: "reproductive physiological process" EXACT []
+   xref: Wikipedia:Reproduction
+   is_a: GO:0008150 ! biological_process
+
+   [Term]
+   id: GO:0000018
+   name: regulation of DNA recombination
+   namespace: biological_process
+   def: "Any process that modulates the frequency, rate or extent of DNA recombination, a DNA metabolic process in which a new genotype is formed by reassortment of genes resulting in gene combinations different from those that were present in the parents." [GOC:go_curators, ISBN:0198506732]
+   is_a: GO:0051052 ! regulation of DNA metabolic process
+   relationship: regulates GO:0006310 ! DNA recombination
+
+   [Term]
+   id: GO:0000030
+   name: mannosyltransferase activity
+   namespace: molecular_function
+   def: "Catalysis of the transfer of a mannosyl group to an acceptor molecule, typically another carbohydrate or a lipid." [GOC:ai, GOC:cjm]
+   xref: Reactome:R-HSA-162797 "mannose (a1-2) mannose (a1-6) (ethanolamineP) mannose (a1-4) glucosaminyl-acyl-PI -> mannose (a1) mannose (a1-2) mannose (a1-6) (ethanolamineP) mannose (a1-4) glucosaminyl-acyl-PI"
+   xref: Reactome:R-HSA-162830 "glucosaminyl-acyl-PI + dolichol phosphate D-mannose -> mannose(al1-4)glucosaminyl-acyl-PI + dolichol phosphate"
+   xref: Reactome:R-HSA-446198 "ALG12 transfers Man to N-glycan precursor (GlcNAc)2 (Man)7 (PP-Dol)1"
+   xref: Reactome:R-HSA-4720497 "Defective ALG12 does not add mannose to the N-glycan precursor"
+   is_a: GO:0016758 ! transferase activity, transferring hexosyl groups
+
+   [Term]
+   id: GO:0000038
+   name: very long-chain fatty acid metabolic process
+   namespace: biological_process
+   def: "The chemical reactions and pathways involving a fatty acid which has a chain length greater than C22." [CHEBI:27283, GOC:hjd]
+   synonym: "very long chain fatty acid metabolic process" EXACT [GOC:bf]
+   synonym: "very-long-chain fatty acid metabolic process" EXACT []
+   synonym: "very-long-chain fatty acid metabolism" EXACT []
+   is_a: GO:0006631 ! fatty acid metabolic process
+
 To extrapolate the **GO** edges from the ``gobasic.obo`` file, we can use the subroutine ``build_edges``. This subroutine receives in input the ``obo`` file:
 
 .. code-block:: perl
 
    ## loading the obo file and calling the subroutine
-   my $obofile= "example/data/gobasic.obo";
+   my $obofile= "data/gobasic.obo";
    my $gores= obogaf::parser::build_edges($obofile);
 
    ## storing
-   my $goedges= "example/data/gobasic-edges.txt";
+   my $goedges= "data/gobasic-edges.txt";
    open OUT, "> $goedges"; 
    print OUT "${$gores}"; ## dereferencing
    close OUT;
 
-For the sake of the space, below we just show the first ``25`` lines of the output file ``gobasic-edges.txt`` (``head -n25 example/data/gobasic-edges.txt``): 
+For the sake of the space, below we just show the first ``25`` lines of the output file ``gobasic-edges.txt`` (``head -n25 data/gobasic-edges.txt``): 
 
 .. code-block:: text
 
@@ -149,16 +248,16 @@ To isolate nodes and relationships belonging to one of the **GO** sub-ontology (
 .. code-block:: perl
 
    ## loading and calling
-   my $goedges= "example/data/gobasic-edges.txt"; ## obtained previously by calling obogaf::parser::build_edges
+   my $goedges= "data/gobasic-edges.txt"; ## obtained previously by calling obogaf::parser::build_edges
    my $BPres= obogaf::parser::build_subonto($goedges, "biological_process");
 
    ## storing
-   my $BPedges= "example/data/gobasic-edgesBP.txt";
+   my $BPedges= "data/gobasic-edgesBP.txt";
    open OUT, "> $BPedges";
    print OUT "${$BPres}";
    close OUT;
 
-Below we report the first ``10`` lines of ``gobasic-edgesBP.txt`` (``head -n10 example/data/gobasic-edgesBP.txt``):
+Below we report the first ``10`` lines of ``gobasic-edgesBP.txt`` (``head -n10 data/gobasic-edgesBP.txt``):
 
 .. code-block:: text
 
@@ -179,18 +278,18 @@ It is worth noting that the same output can be also achieved by using the ``grep
 
 .. code-block:: bash
 
-   $ grep "biological_process" example/data/gobasic-edges.txt | cut -f2- > example/data/gobasic-edgesBP.txt
+   $ grep "biological_process" data/gobasic-edges.txt | cut -f2- > data/gobasic-edgesBP.txt
 
 If we want to isolate nodes and relationships separately for each **GO** subontology at one fell swoop, by Perl:
 
 .. code-block:: perl
 
-   my $goedges= "example/data/gobasic-edges.txt"; ## obtained previously by calling obogaf::parser::build_edges
+   my $goedges= "data/gobasic-edges.txt"; ## obtained previously by calling obogaf::parser::build_edges
    my @domains= qw(biological_process molecular_function cellular_component);
    my %aspects=(biological_process => "BP", molecular_function => "MF", cellular_component => "CC");
 
    foreach my $domain (@domains){
-       my $outfile= "example/data/gobasic-edges"."$aspects{$domain}".".txt";
+       my $outfile= "data/gobasic-edges"."$aspects{$domain}".".txt";
        open OUT, "> $outfile";
        my $domainres= obogaf::parser::build_subonto($goedges, $domain);
        print OUT "${$domainres}";
@@ -201,13 +300,13 @@ and by bash:
 
 .. code-block:: bash
 
-   goedges="example/data/gobasic-edges.txt"; ## obtained previously by calling obogaf::parser::build_edges
+   goedges="data/gobasic-edges.txt"; ## obtained previously by calling obogaf::parser::build_edges
    domains=("biological_process" "molecular_function" "cellular_component");
    aspects=("BP" "MF" "CC");
 
    len="${#domains[@]}";
    for ((i = 0 ; i < len ; i++)); do
-       grep ${domains[$i]} example/data/gobasic-edges.txt | cut -f2- > example/data/gobasic-edges${aspects[$i]}.txt
+       grep ${domains[$i]} data/gobasic-edges.txt | cut -f2- > data/gobasic-edges${aspects[$i]}.txt
    done
 
 To print some statistics on the ``GO`` graph, we can use the subroutine ``make_stat``. The input arguments required by this subroutine are:
@@ -218,7 +317,7 @@ To print some statistics on the ``GO`` graph, we can use the subroutine ``make_s
 
 .. code-block:: perl
 
-   my ($goedges, $parentIndex, $childIndex)= ("example/data/gobasic-edges.txt", 1, 2);
+   my ($goedges, $parentIndex, $childIndex)= ("data/gobasic-edges.txt", 1, 2);
    my $res= obogaf::parser::make_stat($goedges, $parentIndex, $childIndex);
    print "$res";
 
@@ -252,7 +351,7 @@ To compute the stats just for a specific ``GO`` subontology (e.g. ``GO BP``) we 
 
 .. code-block:: perl
 
-   my ($goedges, $parentIndex, $childIndex)= ("example/data/gobasic-edgesBP.txt", 0, 1);
+   my ($goedges, $parentIndex, $childIndex)= ("data/gobasic-edgesBP.txt", 0, 1);
    my $res= obogaf::parser::make_stat($goedges, $parentIndex, $childIndex);
    print "$res";
 
@@ -286,7 +385,7 @@ To compute the stats just for a specific ``GO`` subontology (e.g. ``GO BP``) we 
 .. code-block:: perl
    
    my $parlist= "gobasic-parGO.txt";
-   my ($goedges, $parentIndex, $childIndex)= ("example/data/gobasic-edges.txt", 1, 2);
+   my ($goedges, $parentIndex, $childIndex)= ("data/gobasic-edges.txt", 1, 2);
    my $pares= obogaf::parser::get_parents_or_children_list($goedges, $parentIndex, $childIndex, "parents");
    open FH, "> $parlist";
    foreach my $k (sort{$a cmp $b} keys %$pares) { print FH "$k $$pares{$k}\n";} ## parents  list
@@ -301,7 +400,7 @@ To compute the stats just for a specific ``GO`` subontology (e.g. ``GO BP``) we 
 Below we show few lines of ``gobasic-parGO.txt`` as example:
 
 .. code-block:: text
-
+   
    GO:0000001 GO:0048308|GO:0048311
    GO:0000002 GO:0007005
    GO:0000003 GO:0008150
@@ -312,12 +411,12 @@ Below we show few lines of ``gobasic-parGO.txt`` as example:
    GO:0000011 GO:0007033|GO:0048308
    GO:0000012 GO:0006281
    GO:0000014 GO:0004520
-   GO:0000015 GO:1902494|GO:0005829
+   GO:0000015 GO:0005829|GO:1902494
    GO:0000016 GO:0004553
    GO:0000017 GO:0042946
    GO:0000018 GO:0051052
    GO:0000019 GO:0000018
-   GO:0000022 GO:0051231|GO:1903047|GO:0000070|GO:0007052
+   GO:0000022 GO:0000070|GO:0007052|GO:0051231|GO:1903047
    GO:0000023 GO:0005984
    GO:0000024 GO:0000023|GO:0046351
    GO:0000025 GO:0000023|GO:0046352
@@ -342,11 +441,11 @@ NOTE: the annotation file on ``GOA`` website are monthly updated. The release us
 
 ----
 
-First we must download the annotation file in the ``example/data`` folder (note that the link show below refers to the most updated release):
+First we must download the annotation file in the ``data`` folder (note that the link show below refers to the most updated release):
 
 .. code-block:: bash
 
-   $ cd example/data && wget ftp://ftp.ebi.ac.uk/pub/databases/GO/goa/CHICKEN/goa_chicken.gaf.gz -O goa_chicken.gaf.gz
+   $ cd data && wget ftp://ftp.ebi.ac.uk/pub/databases/GO/goa/CHICKEN/goa_chicken.gaf.gz -O goa_chicken.gaf.gz
 
 By having a look to the ``goa_chicken.gaf.gz`` file we see that it is structured as follow (for the sake of space we display just the first ``20`` lines):
 
@@ -364,9 +463,9 @@ By having a look to the ``goa_chicken.gaf.gz`` file we see that it is structured
    !Generated: 2019-11-11 15:58
    !GO-version: http://purl.obolibrary.org/obo/go/releases/2019-11-09/extensions/go-plus.owl
    !
-   UniProtKB   A0A088BIK7  EDbeta      GO:0005200  GO_REF:0000002 IEA   InterPro:IPR003461   F  Keratin  EDbeta|EDBETA  protein  taxon:9031  20191109 InterPro    
-   UniProtKB   A0A088BIK7  EDbeta      GO:0005882  GO_REF:0000038 IEA   UniProtKB-KW:KW-0416 C  Keratin  EDbeta|EDBETA  protein  taxon:9031  20191109 UniProt     
-   UniProtKB   A0A088BIK7  EDbeta      GO:0007010  GO_REF:0000108 IEA   GO:0005200  P  Keratin  EDbeta|EDBETA  protein  taxon:9031  20191109 GOC      
+   UniProtKB   A0A088BIK7  EDbeta   GO:0005200  GO_REF:0000002 IEA   InterPro:IPR003461   F  Keratin  EDbeta|EDBETA  protein  taxon:9031  20191109 InterPro    
+   UniProtKB   A0A088BIK7  EDbeta   GO:0005882  GO_REF:0000038 IEA   UniProtKB-KW:KW-0416 C  Keratin  EDbeta|EDBETA  protein  taxon:9031  20191109 UniProt     
+   UniProtKB   A0A088BIK7  EDbeta   GO:0007010  GO_REF:0000108 IEA   GO:0005200  P  Keratin  EDbeta|EDBETA  protein  taxon:9031  20191109 GOC      
    UniProtKB   A0A0A0MQ32  LOXL2    GO:0000122  GO_REF:0000107 IEA   UniProtKB:Q9Y4K0|ensembl:ENSP00000373783  P  Lysyl oxidase homolog 2 LOXL2 protein  taxon:9031  20191109 Ensembl     
    UniProtKB   A0A0A0MQ32  LOXL2    GO:0000785  GO_REF:0000107 IEA   UniProtKB:Q9Y4K0|ensembl:ENSP00000373783  C  Lysyl oxidase homolog 2 LOXL2 protein  taxon:9031  20191109 Ensembl     
    UniProtKB   A0A0A0MQ32  LOXL2    GO:0001666  GO_REF:0000107 IEA   UniProtKB:P58022|ensembl:ENSMUSP00000022660  P  Lysyl oxidase homolog 2 LOXL2 protein  taxon:9031  20191109 Ensembl     
@@ -383,10 +482,10 @@ Now we can build the list of annotations by using the subroutine ``gene2biofun``
 
 .. code-block:: perl
 
-   my ($inputfile, $geneindex, $classindex)= ("example/data/goa_chicken.gaf.gz", 1, 4);
+   my ($inputfile, $geneindex, $classindex)= ("data/goa_chicken.gaf.gz", 1, 4);
    my ($res, $stat)= obogaf::parser::gene2biofun($inputfile, $geneindex, $classindex);
 
-   my $goaout= "example/data/chicken.uniprot2go.txt";
+   my $goaout= "data/chicken.uniprot2go.txt";
    open OUT, "> $goaout";
    foreach my $k (sort{$a cmp $b} keys %$res) { print OUT "$k $$res{$k}\n";} 
    close OUT;
@@ -396,10 +495,10 @@ Now we can build the list of annotations by using the subroutine ``gene2biofun``
    genes: 15695
    ontology terms: 13953
 
-``gene2biofun`` returns a list of two anonymous references. The first is an anonymous hash storing for each UniProtKB protein all its associated ``GO`` terms (pipe separated). The second is an anonymous scalar containing basic statistics such as the total unique number of proteins and ontology terms. In the example above the anonymous hash is addressed in the output file ``example/data/chicken.uniprot2go.txt`` and the stats are printed on the shell. Finally, it is worth noting that ``gene2biofun`` can handle both compress ``.gz`` file and plain ``.txt`` file. Below we report as an example a snapshot of the associations between UniProtKB entry and ``GO`` terms obtained by running ``gene2biofun`` and stored in the file ``example/data/chicken.uniprot2go.txt`` (``head -n10 example/data/chicken.uniprot2go.txt``):
+``gene2biofun`` returns a list of two anonymous references. The first is an anonymous hash storing for each UniProtKB protein all its associated ``GO`` terms (pipe separated). The second is an anonymous scalar containing basic statistics such as the total unique number of proteins and ontology terms. In the example above the anonymous hash is addressed in the output file ``data/chicken.uniprot2go.txt`` and the stats are printed on the shell. Finally, it is worth noting that ``gene2biofun`` can handle both compress ``.gz`` file and plain ``.txt`` file. Below we report as an example a snapshot of the associations between UniProtKB entry and ``GO`` terms obtained by running ``gene2biofun`` and stored in the file ``data/chicken.uniprot2go.txt`` (``head -n10 data/chicken.uniprot2go.txt``):
 
 .. code-block:: text
-
+   
    A0A088BIK7 GO:0005200|GO:0005882|GO:0007010
    A0A0A0MQ32 GO:0000122|GO:0000785|GO:0001666|GO:0001837|GO:0001935|GO:0002040|GO:0004720|GO:0005044|GO:0005507|GO:0005509|GO:0005615|GO:0005654|GO:0005783|GO:0006897|GO:0010718|GO:0016020|GO:0018057|GO:0030199|GO:0032332|GO:0043542|GO:0046688|GO:0070492|GO:0070828|GO:1902455
    A0A0A0MQ34 GO:0009374
@@ -408,8 +507,8 @@ Now we can build the list of annotations by using the subroutine ``gene2biofun``
    A0A0A0MQ42 GO:0005654|GO:0005794|GO:0019221|GO:0030368
    A0A0A0MQ45 GO:0000086|GO:0004674|GO:0005524|GO:0005634|GO:0005654|GO:0005813|GO:0007147|GO:0018105|GO:0032154|GO:0032515|GO:0035556|GO:0051726|GO:1904668
    A0A0A0MQ47 GO:0000122|GO:0000993|GO:0002039|GO:0005634|GO:0005829|GO:0008285|GO:0010452|GO:0018024|GO:0018026|GO:0018027|GO:0034968|GO:0043516|GO:0046975
-   A0A0A0MQ52 GO:0000724|GO:0003678|GO:0003682|GO:0003682|GO:0003688|GO:0003697|GO:0005524|GO:0005634|GO:0006270|GO:0007292|GO:0019899|GO:0032406|GO:0032407|GO:0032408|GO:0032508|GO:0036298|GO:0036298|GO:0042555|GO:0070716|GO:0070716|GO:0071168|GO:0097362|GO:0097362
-   A0A0A0MQ56 GO:0005615|GO:0005623|GO:0010975|GO:1990830|GO:0005874
+   A0A0A0MQ52 GO:0000724|GO:0003678|GO:0003682|GO:0003688|GO:0003697|GO:0005524|GO:0005634|GO:0006270|GO:0007292|GO:0019899|GO:0032406|GO:0032407|GO:0032408|GO:0032508|GO:0036298|GO:0042555|GO:0070716|GO:0071168|GO:0097362
+   A0A0A0MQ56 GO:0005615|GO:0005623|GO:0005874|GO:0010975|GO:1990830
 
    ... to be continued...
 
@@ -418,11 +517,11 @@ Map GO terms between releases
 
 In time-lapse hold-out experiments we use annotations of an old ``GO`` release to predict the protein function of a more recent ``GO`` release. However, between different ``GO`` releases some ontology terms could be removed, others changed or become obsolete. Then before beginning time-lapse hold-out experiments, we need to map the old ``GO`` terms to the new ones by parsing the annotation file of an *old* ``GO`` release using as **key** the *alt-ID* taken from the obo file of the *new* ``GO`` release . The subroutine ``map_OBOterm_between_release`` does that for us.
 
-Firstly, we must download the old annotation file of the ``CHICKEN`` organism in the ``example/data`` directory (here we use the ``07/06/16`` release):
+Firstly, we must download the old annotation file of the ``CHICKEN`` organism in the ``data`` directory (here we use the ``07/06/16`` release):
 
 .. code-block:: bash
 
-   $ cd example/data && wget ftp://ftp.ebi.ac.uk/pub/databases/GO/goa/old/CHICKEN/goa_chicken.gaf.128.gz -O goa_chicken.gaf.128.gz
+   $ cd data && wget ftp://ftp.ebi.ac.uk/pub/databases/GO/goa/old/CHICKEN/goa_chicken.gaf.128.gz -O goa_chicken.gaf.128.gz
 
 The input arguments required by ``map_OBOterm_between_release`` are:
 
@@ -433,10 +532,10 @@ The input arguments required by ``map_OBOterm_between_release`` are:
 
 .. code-block:: perl
 
-   my ($obofile, $goafileOld, $classindex)= ("example/data/gobasic.obo", "example/data/goa_chicken.gaf.128.gz", 4);
+   my ($obofile, $goafileOld, $classindex)= ("data/gobasic.obo", "data/goa_chicken.gaf.128.gz", 4);
    my ($res, $stat)= obogaf::parser::map_OBOterm_between_release($obofile, $goafileOld, $classindex);
 
-   my $mapfile= "example/data/chicken.goa.mapped.txt";
+   my $mapfile= "data/chicken.goa.mapped.txt";
    open OUT, "> $mapfile"; 
    print OUT "${$res}";
    close OUT;
@@ -462,13 +561,13 @@ The input arguments required by ``map_OBOterm_between_release`` are:
    Tot. altID seen:  201
    Tot. altID unseen:   2416
 
-The ``map_OBOterm_between_release`` subroutine returns a list of two anonymous references. The first is an anonymous scalar storing the annotations file in the same format of the input file but with the *obsolete* ontology terms substituted with the *updated* ones. The second reference is an anonymous scalar containing some basic statistics, such as the total unique number of ontology terms (of the old release) and the total number of mapped and unmapped *altID* ontology terms. In addition, all the found pairs ``alt_id - id`` are returned. In the example run above the anonymous hash is addressed in the output file ``example/data/chicken.goa.mapped.txt`` whereas the stats are printed on the shell. 
+The ``map_OBOterm_between_release`` subroutine returns a list of two anonymous references. The first is an anonymous scalar storing the annotations file in the same format of the input file but with the *obsolete* ontology terms substituted with the *updated* ones. The second reference is an anonymous scalar containing some basic statistics, such as the total unique number of ontology terms (of the old release) and the total number of mapped and unmapped *altID* ontology terms. In addition, all the found pairs ``alt_id - id`` are returned. In the example run above the anonymous hash is addressed in the output file ``data/chicken.goa.mapped.txt`` whereas the stats are printed on the shell. 
 
 The difference between the *old* and the *mapped* file can be easily displayed by using the ``diff`` command (in a Linux environment):
 
 .. code-block:: bash
 
-   $ cd example/data && gunzip -k goa_chicken.gaf.128.gz
+   $ cd data && gunzip -k goa_chicken.gaf.128.gz
    $ diff goa_chicken.gaf.128 chicken.goa.mapped.txt > go.ann.diff
 
 To give an example, below we show the first ``23`` lines of the file ``go.ann.diff``:
@@ -520,13 +619,26 @@ Here we use ``obogaf::parser`` to handle the ``HPO`` obo file and return some ba
    use obogaf::parser; 
 
    ## create folder where storing example data
-   my $basedir= "example/data/";
+   my $basedir= "data/";
    make_path($basedir) unless(-d $basedir);
 
    ## download HPO obo file
    my $obofile= $basedir."hpo.obo";
    my $hpobo= qx{wget --output-document=$obofile http://purl.obolibrary.org/obo/hp.obo};
    print "HPO obo file downloaded: done\n\n";
+
+   ## shrink HPO obo file to a subset of terms
+   my @terms = qw(HP:0001507 HP:0000008 HP:0002719 HP:0000021 HP:0000023);
+   my $termsfile= $basedir."hpoterms.txt";
+   open OUT, "> $termsfile";
+   foreach my $go (@terms){print OUT "$go\n";}
+   close OUT;
+
+   $res= obo_filter($obofile, $termsfile);
+   my $newobo= $basedir."hpo-shrunk.obo"; 
+   open OUT, ">", $newobo; 
+   print OUT "${$res}";
+   close OUT;
 
    ## extract edges from HPO obo file
    my $hpores= obogaf::parser::build_edges($obofile);
@@ -594,7 +706,7 @@ Here we use ``obogaf::parser`` to parse the ``HPO`` annotation file (release ``2
    use obogaf::parser; 
 
    ## create folder where storing data
-   my $basedir= "example/data/";
+   my $basedir= "data/";
    make_path($basedir) unless(-d $basedir);
 
    ## download HPO annotations 
@@ -617,17 +729,17 @@ Here we use ``obogaf::parser`` to parse the ``HPO`` annotation file (release ``2
 Below we show the first ``10`` lines of the ``hpo.gene2pheno.txt`` file, just to give an example of how this file is structured:
 
 .. code-block:: text
-
-   A2M HP:0410054|HP:0001425|HP:0001300|HP:0000006|HP:0000726|HP:0002423|HP:0002185|HP:0002511
-   A2ML1 HP:0000768|HP:0001156|HP:0000006|HP:0000391|HP:0000520|HP:0001928|HP:0100625|HP:0000403|HP:0000407|HP:0011800|HP:0011675|HP:0000028|HP:0002974|HP:0002208|HP:0008872|HP:0000044|HP:0001324|HP:0000179|HP:0007477|HP:0000316|HP:0005692|HP:0002750|HP:0004415|HP:0002240|HP:0000325|HP:0010318|HP:0001743|HP:0000465|HP:0006610|HP:0000218|HP:0002650|HP:0000474|HP:0000347|HP:0000348|HP:0000476|HP:0011869|HP:0011362|HP:0004322|HP:0000995|HP:0001252|HP:0001892|HP:0000486|HP:0010982|HP:0001641|HP:0001004|HP:0001260|HP:0000494|HP:0000368|HP:0004209|HP:0002162|HP:0011381|HP:0000508|HP:0000639|HP:0000767
+   
+   A2M HP:0000006|HP:0000726|HP:0001300|HP:0001425|HP:0002185|HP:0002423|HP:0002511|HP:0410054
+   A2ML1 HP:0000006|HP:0000028|HP:0000044|HP:0000179|HP:0000218|HP:0000316|HP:0000325|HP:0000347|HP:0000348|HP:0000368|HP:0000391|HP:0000403|HP:0000407|HP:0000465|HP:0000474|HP:0000476|HP:0000486|HP:0000494|HP:0000508|HP:0000520|HP:0000639|HP:0000767|HP:0000768|HP:0000995|HP:0001004|HP:0001156|HP:0001252|HP:0001260|HP:0001324|HP:0001641|HP:0001743|HP:0001892|HP:0001928|HP:0002162|HP:0002208|HP:0002240|HP:0002650|HP:0002750|HP:0002974|HP:0004209|HP:0004322|HP:0004415|HP:0005692|HP:0006610|HP:0007477|HP:0008872|HP:0010318|HP:0010982|HP:0011362|HP:0011381|HP:0011675|HP:0011800|HP:0011869|HP:0100625
    A4GALT HP:0000006|HP:0010970
-   AAAS HP:0001347|HP:0008259|HP:0007556|HP:0011463|HP:0000007|HP:0002376|HP:0000648|HP:0000649|HP:0000522|HP:0002571|HP:0000972|HP:0000846|HP:0007440|HP:0001430|HP:0000982|HP:0000407|HP:0007002|HP:0003676|HP:0003487|HP:0004319|HP:0001761|HP:0001249|HP:0004322|HP:0001250|HP:0001251|HP:0008163|HP:0001252|HP:0000612|HP:0001324|HP:0001260|HP:0012332|HP:0002093|HP:0001263|HP:0010486|HP:0000505|HP:0000953|HP:0000252|HP:0009916|HP:0000830|HP:0001278
-   AAGAB HP:0003584|HP:0040162|HP:0025092|HP:0000006|HP:0007530|HP:0002894|HP:0005584|HP:0001425|HP:0006740|HP:0000982|HP:0025114|HP:0003002|HP:0003003|HP:0001597|HP:0012189
-   AARS1 HP:0003202|HP:0000643|HP:0001284|HP:0000006|HP:0000007|HP:0000648|HP:0001290|HP:0002059|HP:0002827|HP:0002317|HP:0002063|HP:0001298|HP:0003477|HP:0001558|HP:0000407|HP:0002072|HP:0002460|HP:0000668|HP:0012447|HP:0000546|HP:0002355|HP:0100660|HP:0001336|HP:0001337|HP:0011968|HP:0009027|HP:0200134|HP:0002376|HP:0002509|HP:0000717|HP:0002133|HP:0002521|HP:0010844|HP:0000348|HP:0001761|HP:0001249|HP:0001250|HP:0004322|HP:0001251|HP:0001508|HP:0002020|HP:0001765|HP:0003429|HP:0009830|HP:0003431|HP:0001511|HP:0100710|HP:0001257|HP:0007018|HP:0000750|HP:0000494|HP:0001263|HP:0001265|HP:0003828|HP:0001268|HP:0002421|HP:0002936|HP:0000504|HP:0003577|HP:0001273|HP:0000252|HP:0000508|HP:0000639
-   AARS2 HP:0002371|HP:0006980|HP:0002180|HP:0000007|HP:0002186|HP:0000716|HP:0008209|HP:0000726|HP:0003676|HP:0001251|HP:0001508|HP:0002151|HP:0001639|HP:0001257|HP:0002089|HP:0001260|HP:0002353|HP:0001522|HP:0001332|HP:0001272|HP:0003128|HP:0001337|HP:0006970|HP:0003324|HP:0000639
-   AASS HP:0000736|HP:0001249|HP:0003297|HP:0004322|HP:0001250|HP:0001252|HP:0000007|HP:0001256|HP:0003593|HP:0032397|HP:0000750|HP:0002927|HP:0001903|HP:0001264|HP:0000752|HP:0002353|HP:0002161|HP:0000119|HP:0001083|HP:0100543
-   ABAT HP:0000098|HP:0001250|HP:0001347|HP:0001254|HP:0000007|HP:0001321|HP:0003819|HP:0025356|HP:0006829|HP:0000494|HP:0002415|HP:0001263|HP:0000278|HP:0025430|HP:0001274|HP:0007291
-   ABCA1 HP:0002240|HP:0003457|HP:0100546|HP:0003396|HP:0001349|HP:0000006|HP:0000007|HP:0025608|HP:0003146|HP:0010829|HP:0001677|HP:0004943|HP:0007759|HP:0000656|HP:0001744|HP:0001873|HP:0008404|HP:0007957|HP:0003477|HP:0004374|HP:0011096|HP:0001433|HP:0005145|HP:0002460|HP:0002716|HP:0007133|HP:0030814|HP:0000991|HP:0007328|HP:0003233|HP:0002730|HP:0002027|HP:0002155|HP:0003693|HP:0000622|HP:0001903|HP:0001712|HP:0001392|HP:0001265|HP:0002164|HP:0006901|HP:0000505|HP:0001658|HP:0005181|HP:0000958
+   AAAS HP:0000007|HP:0000252|HP:0000407|HP:0000505|HP:0000522|HP:0000612|HP:0000648|HP:0000649|HP:0000830|HP:0000846|HP:0000953|HP:0000972|HP:0000982|HP:0001249|HP:0001250|HP:0001251|HP:0001252|HP:0001260|HP:0001263|HP:0001278|HP:0001324|HP:0001347|HP:0001430|HP:0001761|HP:0002093|HP:0002376|HP:0002571|HP:0003487|HP:0003676|HP:0004319|HP:0004322|HP:0007002|HP:0007440|HP:0007556|HP:0008163|HP:0008259|HP:0009916|HP:0010486|HP:0011463|HP:0012332
+   AAGAB HP:0000006|HP:0000982|HP:0001425|HP:0001597|HP:0002894|HP:0003002|HP:0003003|HP:0003584|HP:0005584|HP:0006740|HP:0007530|HP:0012189|HP:0025092|HP:0025114|HP:0040162
+   AARS1 HP:0000006|HP:0000007|HP:0000252|HP:0000348|HP:0000407|HP:0000494|HP:0000504|HP:0000508|HP:0000546|HP:0000639|HP:0000643|HP:0000648|HP:0000668|HP:0000717|HP:0000750|HP:0001249|HP:0001250|HP:0001251|HP:0001257|HP:0001263|HP:0001265|HP:0001268|HP:0001273|HP:0001284|HP:0001290|HP:0001298|HP:0001336|HP:0001337|HP:0001508|HP:0001511|HP:0001558|HP:0001761|HP:0001765|HP:0002020|HP:0002059|HP:0002063|HP:0002072|HP:0002133|HP:0002317|HP:0002355|HP:0002376|HP:0002421|HP:0002460|HP:0002509|HP:0002521|HP:0002827|HP:0002936|HP:0003202|HP:0003429|HP:0003431|HP:0003477|HP:0003577|HP:0003828|HP:0004322|HP:0007018|HP:0009027|HP:0009830|HP:0010844|HP:0011968|HP:0012447|HP:0100660|HP:0100710|HP:0200134
+   AARS2 HP:0000007|HP:0000639|HP:0000716|HP:0000726|HP:0001251|HP:0001257|HP:0001260|HP:0001272|HP:0001332|HP:0001337|HP:0001508|HP:0001522|HP:0001639|HP:0002089|HP:0002151|HP:0002180|HP:0002186|HP:0002353|HP:0002371|HP:0003128|HP:0003324|HP:0003676|HP:0006970|HP:0006980|HP:0008209
+   AASS HP:0000007|HP:0000119|HP:0000736|HP:0000750|HP:0000752|HP:0001083|HP:0001249|HP:0001250|HP:0001252|HP:0001256|HP:0001264|HP:0001903|HP:0002161|HP:0002353|HP:0002927|HP:0003297|HP:0003593|HP:0004322|HP:0032397|HP:0100543
+   ABAT HP:0000007|HP:0000098|HP:0000278|HP:0000494|HP:0001250|HP:0001254|HP:0001263|HP:0001274|HP:0001321|HP:0001347|HP:0002415|HP:0003819|HP:0006829|HP:0007291|HP:0025356|HP:0025430
+   ABCA1 HP:0000006|HP:0000007|HP:0000505|HP:0000622|HP:0000656|HP:0000958|HP:0000991|HP:0001265|HP:0001349|HP:0001392|HP:0001433|HP:0001658|HP:0001677|HP:0001712|HP:0001744|HP:0001873|HP:0001903|HP:0002027|HP:0002155|HP:0002164|HP:0002240|HP:0002460|HP:0002716|HP:0002730|HP:0003146|HP:0003233|HP:0003396|HP:0003457|HP:0003477|HP:0003693|HP:0004374|HP:0004943|HP:0005145|HP:0005181|HP:0006901|HP:0007133|HP:0007328|HP:0007759|HP:0007957|HP:0008404|HP:0010829|HP:0011096|HP:0025608|HP:0030814|HP:0100546
 
    ... to be continued ...
 
@@ -647,7 +759,7 @@ Here we use ``obogaf::parser`` to map the ``HPO`` terms of an *old* release (``2
    use obogaf::parser; 
 
    ## create folder where storing data
-   my $basedir= "example/data/";
+   my $basedir= "data/";
    make_path($basedir) unless(-d $basedir);
 
    ## download HPO obo file

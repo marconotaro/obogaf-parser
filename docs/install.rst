@@ -92,7 +92,7 @@ Dependencies
 
 For building ``obogaf::parser`` you will need the following dependencies
 
- - Perl (v5.22.1)
+ - Perl (>= v5.22.1)
  - Perl Module:
     - Graph - graph data structures and algorithms
     - PerlIO::gzip - Perl extension to provide a PerlIO layer to gzip/gunzip
