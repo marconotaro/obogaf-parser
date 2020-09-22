@@ -1,76 +1,76 @@
 #### obogaf::parser 1.373
 
-#### NEW FEATURES
-- added the new subroutine obo_filter with test
-- improved subroutine get_parents_or_children_list and gene2biofun
+###### New Features
+- add the new subroutine obo_filter with test
+- improve subroutine get_parents_or_children_list and gene2biofun
 
-###### CHANGES
-- added case insensitive regex to read obo and gaf file
-- improved tutorial
+###### Changes
+- add case insensitive regex to read obo and gaf file
+- improve tutorial
 
 #### obogaf::parser 1.272
 
-###### CHANGES
-- fixed CPAN Testers issues
+###### Changes
+- fix CPAN Testers issues
 
 #### obogaf::parser 1.271
 
-###### CHANGES
--fixed CPANTS issues
+###### Changes
+-fix CPANTS issues
 
-#### obogaf::parser 1.27
+#### obogaf::parser 1.270
 
-#### NEW FEATURES
-- added the new subroutine get_parents_or_children_list
-- added source/destination name of obo terms ID in build_edges and build_subonto subroutines
-- fixed bug in die condition in build_subonto subroutine
+###### New Features
+- add the new subroutine get_parents_or_children_list
+- add source/destination name of obo terms ID in build_edges and build_subonto subroutines
+- fix bug in die condition in build_subonto subroutine
 
-###### CHANGES
-- adjusted test according to the new features of build_edges and build_subonto subroutines
+###### Changes
+- adjusted test according to the New Features of build_edges and build_subonto subroutines
 - made test for get_parents_or_children_list
 - updated reference manual and read the docs documentation
 
 #### obogaf::parser 1.016
 
-###### CHANGES
-- added some degenerate test 
-- added homepage in Makefile.PL
+###### Changes
+- add some degenerate test 
+- add homepage in Makefile.PL
 
 #### obogaf::parser 1.015
 
-###### CHANGES
-- fixed CPAN Testers issues
-- improved Makefile.PL
+###### Changes
+- fix CPAN Testers issues
+- improve Makefile.PL
 
 #### obogaf::parser 1.014
 
-###### CHANGES
-- improved obogaf::parser module
-- added much more test cases
-- added Test::Files dependencies (to fix CPAN issues)
-- added regex in MANIFEST.SKIP
-- improved Makefile.PL
+###### Changes
+- improve obogaf::parser module
+- add much more test cases
+- add Test::Files dependencies (to fix CPAN issues)
+- add regex in MANIFEST.SKIP
+- improve Makefile.PL
 
 #### obogaf::parser 1.003
 
-###### CHANGES
-- improved Makefile.PL:
-    - added clean attribute
-    - added CONFIGURE_REQUIRES
-- added regex in MANIFEST.SKIP
+###### Changes
+- improve Makefile.PL:
+    - add clean attribute
+    - add CONFIGURE_REQUIRES
+- add regex in MANIFEST.SKIP
 
 #### obogaf::parser 1.002
 
-###### CHANGES
-- fixed CPANTS issues 
+###### Changes
+- fix CPANTS issues 
 
 #### obogaf::parser 1.001
 
-###### CHANGES
-- added test
-- fixed minor bugs 
-- created documentations on Read the Docs (https://obogaf-parser.readthedocs.io)
+###### Changes
+- add test
+- fix minor bugs 
+- create documentations on Read the Docs (https://obogaf-parser.readthedocs.io)
 
 #### obogaf::parser 0.001
 
-###### MODULE GENESIS
+###### Module Genesis
