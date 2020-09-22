@@ -1,6 +1,6 @@
 package obogaf::parser;
 require 5.006;
-our $VERSION= '1.373'; 
+our $VERSION= '1.373';
 $VERSION= eval $VERSION;
 
 require Exporter;
@@ -41,19 +41,19 @@ sub build_edges{
         }elsif($_=~/^is_a:\s+(\D+\d+)/){
             $source=$1;
             ($isname)= ($_=~/!\s+(.+)/);
-            if(defined $namespace){ 
-                $res .= "$namespace\t$source\t$destination\t$isname\t$idname\tis-a\n"; 
-            }else{ 
-                $res .= "$source\t$destination\t$isname\t$idname\tis-a\n"; 
+            if(defined $namespace){
+                $res .= "$namespace\t$source\t$destination\t$isname\t$idname\tis-a\n";
+            }else{
+                $res .= "$source\t$destination\t$isname\t$idname\tis-a\n";
             }
         }elsif($_=~/^relationship: part_of\s+(\D+\d+)/){
             $pof=$1;
             ($pofname)= ($_=~/!\s+(.+)/);
             if(defined $namespace){
-                $res .= "$namespace\t$pof\t$destination\t$pofname\t$idname\tpart-of\n"; 
-            }else{ 
+                $res .= "$namespace\t$pof\t$destination\t$pofname\t$idname\tpart-of\n";
+            }else{
                 $res .= "$pof\t$destination\t$pofname\t$idname\tpart-of\n";
-            }    
+            }
         }
     }
     close FH;
@@ -68,7 +68,7 @@ sub build_subonto{
         next if $_=~/^[!,#]|^\s*$/;
         my @vals= split(/\t/, $_);
         $checker{$vals[0]}=1;
-        if($vals[0] eq $namespace){ $res .= join("\t", @vals[1..$#vals]); } 
+        if($vals[0] eq $namespace){ $res .= join("\t", @vals[1..$#vals]); }
     }
     close FH;
     unless(exists($checker{$namespace})){die "$edgesfile does not include $namespace or $namespace is not in the first column of $edgesfile.\n";}
@@ -76,7 +76,7 @@ sub build_subonto{
 }
 
 sub make_stat{
-    my ($edgesfile, $parentIndex, $childIndex)= @_; 
+    my ($edgesfile, $parentIndex, $childIndex)= @_;
     my (%indeg, %outdeg, %deg, $ed, $nd, $mindeg, $maxdeg, $medeg, $avgdeg, $den, $scc, $resdeg, $stat, $res);
     ## create graph
     my $g= Graph->new(directed => 1);
@@ -84,7 +84,7 @@ sub make_stat{
     while(<FH>){
         chomp;
         my @vals= split(/\t/,$_);
-        $g->add_edge($vals[$parentIndex], $vals[$childIndex]); 
+        $g->add_edge($vals[$parentIndex], $vals[$childIndex]);
     }
     close FH;
     ## compute indegree/outdegree/degree
@@ -104,11 +104,11 @@ sub make_stat{
     my $mid = int $len/2;
     if($len % 2){ $medeg = $sortdeg[$mid]; }else{ $medeg = ( $sortdeg[$mid-1] + $sortdeg[$mid] ) / 2; }
     $medeg= sprintf("%.4f", $medeg);
-    $mindeg= $sortdeg[0]; 
+    $mindeg= $sortdeg[0];
     $maxdeg= $sortdeg[$#sortdeg];
     ## compute number of nodes and edges
     $ed= $g->edges;
-    $nd= $g->vertices; 
+    $nd= $g->vertices;
     ## compute average degree and density
     $avgdeg= $ed/$nd;
     $den= $ed / ( $nd * ($nd -1) );
@@ -123,8 +123,8 @@ sub make_stat{
 
 sub get_parents_or_children_list{
     my ($edgesfile, $parentIndex, $childIndex, $chdORpar)= @_;
-    my (%nodelist, %outlist); 
-    if($chdORpar ne "parents" && $chdORpar ne "children"){ die "$chdORpar can be 'parents' or 'children'.\n";} 
+    my (%nodelist, %outlist);
+    if($chdORpar ne "parents" && $chdORpar ne "children"){ die "$chdORpar can be 'parents' or 'children'.\n";}
     open FH, "<", $edgesfile or die "cannot open $edgesfile. $!.\n";
     while(<FH>){
         chomp;
@@ -147,10 +147,10 @@ sub obo_filter{
     my (@oboterms, $header, $counter, $res, $obo);
     ## obo terms of interest
     open FH, "<", "$termsfile" or die "cannot open $termsfile. $!.\n";
-    while(<FH>){ 
-        chomp; 
+    while(<FH>){
+        chomp;
         next if $_=~/^\s*$/;
-        push(@oboterms, $_); 
+        push(@oboterms, $_);
     }
     close FH;
     my @unique= do { my %seen; grep { !$seen{$_}++ } @oboterms};
@@ -160,7 +160,7 @@ sub obo_filter{
     while(<FH>){
         next unless 1 .. /\[Term\]/;
         next if /^\[Term\]/;
-        $header .= $_;    
+        $header .= $_;
     }
     ## extract from obo file the terms of interest
     foreach my $oboterm (@oboterms){
@@ -188,7 +188,7 @@ sub gene2biofun{
     if($annfile=~/.gz$/i){ open FH, "<:gzip", $annfile or die "cannot open $annfile. $!.\n"; } else { open FH, "<", "$annfile" or die "cannot open $annfile. $!.\n"; }
     while(<FH>){
         next if $_=~/^[!,#]|^\s*$/;
-        chomp;  
+        chomp;
         my @vals=split(/\t/,$_);
         push(@genes, $vals[$geneIndex]);
         push(@biofun, $vals[$classIndex]);
@@ -200,7 +200,7 @@ sub gene2biofun{
     }
     my @uniqgenes= uniq @genes;
     my @uniqpbiofun= uniq @biofun;
-    $sample= scalar(@uniqgenes); 
+    $sample= scalar(@uniqgenes);
     $oboterm= scalar(@uniqpbiofun);
     $stat .= "genes: $sample\nontology terms: $oboterm\n";
     return (\%gene2biofun, \$stat);
@@ -208,9 +208,9 @@ sub gene2biofun{
 
 sub map_OBOterm_between_release{
     my ($obofile, $annfile, $classIndex)= @_;
-    my (%altid, %oldclass, %old2new, $header, $id, $fln, $pair, $stat, $pstat); 
+    my (%altid, %oldclass, %old2new, $header, $id, $fln, $pair, $stat, $pstat);
     my ($alt, $classes, $seen, $unseen)= (0)x4;
-    ## step 0: pairing altid_2_id (key: alt_id) 
+    ## step 0: pairing altid_2_id (key: alt_id)
     if($obofile=~/.obo$/i){ open FH, "<", "$obofile" or die "cannot open $obofile. $!.\n"; }
     while (<FH>){
         chomp;
@@ -223,10 +223,10 @@ sub map_OBOterm_between_release{
     # step 1: storing old ontology terms in a hash
     if($annfile=~/.gz$/i){ open FH, "<:gzip", $annfile or die "cannot open $annfile. $!.\n"; } else { open FH, "<", "$annfile" or die "cannot open $annfile. $!.\n"; }
     while(<FH>){
-        chomp; 
+        chomp;
         if($_=~/^[!,#]|^\s*$/){ $header .= "$_\n"; }
-        next if $_=~/^[!,#]|^\s*$/;         
-        my @vals=split(/\t/,$_); 
+        next if $_=~/^[!,#]|^\s*$/;
+        my @vals=split(/\t/,$_);
         $oldclass{$vals[$classIndex]}=$vals[$classIndex];
     }
     close FH;
@@ -255,7 +255,7 @@ sub map_OBOterm_between_release{
         my $oboterm= $vals[$classIndex];
         if($old2new{$oboterm}){
             $oboterm= $old2new{$oboterm};
-            $_=~ s/$vals[$classIndex]/$oboterm/g;           
+            $_=~ s/$vals[$classIndex]/$oboterm/g;
             $fln .= "$_\n";
         }else{
             $fln .= "$_\n";
@@ -266,7 +266,7 @@ sub map_OBOterm_between_release{
     ## print mapping stat
     $stat .= "Tot. ontology terms:\t$classes\nTot. altID:\t$alt\nTot. altID seen:\t$seen\nTot. altID unseen:\t$unseen\n";
     unless(not defined $pair){
-        $pstat .= "#alt-id <tab> id\n$pair\n$stat"; 
+        $pstat .= "#alt-id <tab> id\n$pair\n$stat";
         return (\$fln, \$pstat);
     }
     return (\$fln, \$stat);
@@ -281,7 +281,7 @@ __END__
 =encoding utf8
 
 =head1 NAME
- 
+
 obogaf::parser - a perl5 module to handle obo and gaf file
 
 =head1 SYNOPSIS
@@ -289,7 +289,7 @@ obogaf::parser - a perl5 module to handle obo and gaf file
 use obogaf::parser;
 
 my ($graph, $subonto, $res, $stat, $parORchdlist, $newobo);
- 
+
 $graph= build_edges(obofile);
 
 $subonto= build_subonto(edgesfile, namespace);
@@ -306,7 +306,7 @@ $newobo= obo_filter(obofile, termsfile);
 
 =head1 ABSTRACT
 
-B<obogaf::parser> is a perl5 module desinged to handle open biological and biomedical ontology and gene association file. 
+B<obogaf::parser> is a perl5 module desinged to handle open biological and biomedical ontology and gene association file.
 
 =head1 DESCRIPTION
 
@@ -315,8 +315,8 @@ shown in L<GOA website|https://www.ebi.ac.uk/GOA/downloads> and L<HPO website|ht
 
 =over 2
 
-=item build_edges - extract edges from an obo file. 
-    
+=item build_edges - extract edges from an obo file.
+
     my $graph= build_edges(obofile);
 
 B<obofile>: any obo file listed in L<OBO foundry|http://www.obofoundry.org/>. The file extension must be ".obo".
@@ -361,8 +361,8 @@ B<parORchd>: must be C<parents> or C<children>. If C<$parORchd=parents> a pipe s
 
 B<output>: an anonymous hash storing for each node of the graph the list of its children or parents according to the B<parORchd> parameter.
 
-=item obo_filter - prune obo file 
-    
+=item obo_filter - prune obo file
+
     $newobo= obo_filter(obofile, termsfile);
 
 B<obofile>: any obo file listed in L<OBO foundry|http://www.obofoundry.org/>. The file extension must be ".obo".
@@ -380,9 +380,9 @@ More in general any file structured as those aforementioned can be used (basical
 
 B<geneIndex>: index referring to the column containing the samples (genes/proteins).
 
-B<classIndex>: index referring to the column containing the ontology terms. 
+B<classIndex>: index referring to the column containing the ontology terms.
 
-B<output>: a list of two anonymous references. The first is an anonymous hash storing for each gene (or protein) all the associated ontology terms (pipe separated). The second is an anonymous scalar containing basic statistics, such as the total unique number of genes/proteins and annotated ontology terms. 
+B<output>: a list of two anonymous references. The first is an anonymous hash storing for each gene (or protein) all the associated ontology terms (pipe separated). The second is an anonymous scalar containing basic statistics, such as the total unique number of genes/proteins and annotated ontology terms.
 
 =item map_OBOterm_between_release - map ontology terms between different releases.
 
@@ -397,7 +397,7 @@ B<classIndex>: index referring to the column of the B<annfile> containing the on
 B<output>: a list of two anonymous references. The first is an anonymous scalar storing the annotations file in the same format of the input file but with the obsolete ontology terms replaced with the I<updated> ones. The second reference is an anonymous scalar containing some basic statistics, such
 as the total unique number of ontology terms and the total number of mapped and not mapped I<altID> ontology terms. Finally, all the found pairs C<alt_id - id> are returned (if any).
 
-=back 
+=back
 
 =head1 BUGS
 
@@ -408,7 +408,7 @@ Please report any bugs L<here|https://github.com/marconotaro/obogaf-parser/issue
 Copyright (C) 2019 Marco Notaro, all rights reserved.
 
 This program is free software; you can redistribute it
-and/or modify it under the same terms as Perl 5 programming 
+and/or modify it under the same terms as Perl 5 programming
 language system itself.
 
 This program is distributed in the hope that it will be useful, but
@@ -425,4 +425,4 @@ A step-by-step tutorial showing how to apply B<obogaf::parser> to real biomedica
 
 =cut
 
-# yowza yowza yowza 
+# yowza yowza yowza

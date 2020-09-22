@@ -3,14 +3,13 @@
 ## loading obogaf::parser and useful Perl module
 use strict;
 use warnings;
-use obogaf::parser qw(:all); 
-
-## elapased time 
+use obogaf::parser qw(:all);
+## elapased time
 use Time::HiRes qw(time);
 my $start= time;
 
 ## recursively create directories ([-p] mkdir option in perl does not work)
-use File::Path qw(make_path); 
+use File::Path qw(make_path);
 
 ## create folder where storing example I/O files
 my $basedir= "data/";
@@ -20,11 +19,11 @@ make_path($basedir) unless(-d $basedir);
 # use File::HomeDir qw(home);
 # my $basedir = File::HomeDir->my_home."/data/";
 # mkdir $basedir unless(-e $basedir);
- 
-## declare variables 
-my ($res, $stat, $parentIndex, $childIndex, $geneindex, $classindex, $parlist, $pares, $chdlist, $chdres); 
 
-## ~~ HPO OBO ~~ ## 
+## declare variables
+my ($res, $stat, $parentIndex, $childIndex, $geneindex, $classindex, $parlist, $pares, $chdlist, $chdres);
+
+## ~~ HPO OBO ~~ ##
 ## download HPO obo file
 my $obofile= $basedir."hpo.obo";
 my $hpobo= qx{wget --output-document=$obofile http://purl.obolibrary.org/obo/hp.obo};
@@ -38,20 +37,20 @@ foreach my $go (@terms){print OUT "$go\n";}
 close OUT;
 
 $res= obo_filter($obofile, $termsfile);
-my $newobo= $basedir."hpo-shrunk.obo"; 
-open OUT, ">", $newobo; 
+my $newobo= $basedir."hpo-shrunk.obo";
+open OUT, ">", $newobo;
 print OUT "${$res}";
 close OUT;
 
 ## extract edges from HPO obo file
 my $hpores= build_edges($obofile);
-my $hpoedges= $basedir."hpo-edges.txt"; ## hpo edges file declared here 
-open FH, "> $hpoedges"; 
+my $hpoedges= $basedir."hpo-edges.txt"; ## hpo edges file declared here
+open FH, "> $hpoedges";
 print FH "${$hpores}"; ## scalar dereferencing
 close FH;
 print "build HPO edges: done\n\n";
 
-## make stats on HPO 
+## make stats on HPO
 ($parentIndex, $childIndex)= (0,1);
 $res= make_stat($hpoedges, $parentIndex, $childIndex);
 print "$res";
@@ -72,12 +71,12 @@ close FH;
 
 print "\nHPO parents/children list: done\n\n";
 
-## ~~ HPO ANNOTATION ~~ ## 
-## download HPO annotations 
+## ~~ HPO ANNOTATION ~~ ##
+## download HPO annotations
 my $hpofile= $basedir."hpo.ann.txt"; ## hpo annotation file declared here
 my $hpoann= qx{wget --output-document=$hpofile http://compbio.charite.de/jenkins/job/hpo.annotations.monthly/lastStableBuild/artifact/annotation/ALL_SOURCES_ALL_FREQUENCIES_genes_to_phenotype.txt};
 
-## extract HPO annotations 
+## extract HPO annotations
 ($geneindex, $classindex)= (1,3);
 ($res, $stat)= gene2biofun($hpofile, $geneindex, $classindex);
 my $hpout= $basedir."hpo.gene2pheno.txt";
@@ -87,7 +86,7 @@ close FH;
 print "${$stat}\n";
 print "build HPO annotations: done\n\n";
 
-## ~~ MAP HPO TERMS BETWEEN RELEASE ~~ ## 
+## ~~ MAP HPO TERMS BETWEEN RELEASE ~~ ##
 ## download old HPO annotation file
 my $hpofileOld= $basedir."hpo.ann.old.txt"; ## goa annotation file declared here
 my $hpold= qx{wget --output-document=$hpofileOld http://compbio.charite.de/jenkins/job/hpo.annotations.monthly/139/artifact/annotation/ALL_SOURCES_ALL_FREQUENCIES_genes_to_phenotype.txt};
@@ -95,12 +94,12 @@ my $hpold= qx{wget --output-document=$hpofileOld http://compbio.charite.de/jenki
 ## map HPO terms between release
 ($res, $stat)= map_OBOterm_between_release($obofile, $hpofileOld, 3);
 my $mapfile= $basedir."hpo.ann.mapped.txt";
-open FH, "> $mapfile"; 
+open FH, "> $mapfile";
 print FH "${$res}";
 close FH;
 print "${$stat}";
 
-## ~~ ELAPSED TIME ~~ ## 
+## ~~ ELAPSED TIME ~~ ##
 print "\n\n";
 my $span= time - $start;
 $span= sprintf("%.4f", $span);

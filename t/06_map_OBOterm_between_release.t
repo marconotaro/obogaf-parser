@@ -11,7 +11,7 @@ my $fakeobo = "t/data/test_GObasic.obo";
 my $fakeext =  "t/data/test_gobasic.OBO";
 
 my $gafold  = "t/data/test_goa_chicken_128.gaf";
-my $zipgaf  = "t/data/test_goa_chicken_128.gaf.gz"; 
+my $zipgaf  = "t/data/test_goa_chicken_128.gaf.gz";
 my $fakegaf = "t/data/test_GOA_chicken_128.gaf";
 my $fakezip = "t/data/test_GOA_chicken_128.gaf.gz";
 
@@ -31,8 +31,8 @@ dies_ok ( sub { my $file = map_OBOterm_between_release($obofile, $fakegaf, $clas
 
 ## test mapping without header
 ($res, $stat)= map_OBOterm_between_release($obofile, $gafold, $classindex);
-my $mapfile= "t/data/test_chicken_goa_mapped.txt"; 
-open $fh, ">", $mapfile; 
+my $mapfile= "t/data/test_chicken_goa_mapped.txt";
+open $fh, ">", $mapfile;
 print $fh "${$res}";
 close $fh;
 $res= ${$stat};
@@ -43,7 +43,7 @@ is($res, "#alt-id <tab> id\nGO:0042503\tGO:0007260\nGO:0042506\tGO:0007260\n\nTo
 
 ## add header in gaf file
 my $gafheader= "t/data/test_goa_chicken_128_header.gaf";
-open $fh, ">", $gafheader; 
+open $fh, ">", $gafheader;
 open FH, "<", $gafold;
 while(<FH>){
     if($.<2){print $fh "! header gaf file\n!\n";}
@@ -54,8 +54,8 @@ close $fh;
 
 ## test gaf file with header
 ($res, $stat)= map_OBOterm_between_release($obofile, $gafheader, $classindex);
-my $mapfile_header= "t/data/test_chicken_goa_mapped_header.txt"; 
-open $fh, ">", $mapfile_header; 
+my $mapfile_header= "t/data/test_chicken_goa_mapped_header.txt";
+open $fh, ">", $mapfile_header;
 print $fh "${$res}";
 close $fh;
 my $header_res= ${$stat};
@@ -66,7 +66,7 @@ is($header_res, "#alt-id <tab> id\nGO:0042503\tGO:0007260\nGO:0042506\tGO:000726
 
 ## test gaf file no pair id-altid
 my $gafunpair= "t/data/test_goa_chicken_128_unpair.gaf";
-open $fh, ">", $gafunpair; 
+open $fh, ">", $gafunpair;
 open FH, "<", $gafold;
 while(<FH>){
     my @vals=split(/\t/,$_);
@@ -76,8 +76,8 @@ close FH;
 close $fh;
 
 ($res, $stat)= map_OBOterm_between_release($obofile, $gafunpair, $classindex);
-my $mapfile_unpair= "t/data/test_chicken_goa_mapped_unpair.txt"; 
-open $fh, ">", $mapfile_header; 
+my $mapfile_unpair= "t/data/test_chicken_goa_mapped_unpair.txt";
+open $fh, ">", $mapfile_header;
 print $fh "${$res}";
 close $fh;
 my $unpair_res= ${$stat};

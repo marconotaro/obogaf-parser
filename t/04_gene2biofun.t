@@ -7,7 +7,7 @@ use obogaf::parser qw(gene2biofun);
 
 ## input files
 my $gafile  = "t/data/test_goa_chicken.gaf";
-my $zipgaf  = "t/data/test_goa_chicken.gaf.gz"; 
+my $zipgaf  = "t/data/test_goa_chicken.gaf.gz";
 my $fakegaf = "t/data/test_GOA_chicken.gaf";
 my $fakezip = "t/data/test_GOA_chicken.gaf.gz";
 
@@ -25,7 +25,7 @@ dies_ok ( sub { my $file = gene2biofun($fakezip, $geneindex, $classindex) }, 'di
 ($res,$stat)= gene2biofun($gafile, $geneindex, $classindex);
 my $ann= "t/data/test_chicken.uniprot2go.txt";
 open $fh, ">", $ann;
-foreach my $k (sort{$a cmp $b} keys %$res) { print $fh "$k $$res{$k}\n";} 
+foreach my $k (sort{$a cmp $b} keys %$res) { print $fh "$k $$res{$k}\n";}
 close $fh;
 $res= ${$stat};
 
@@ -34,7 +34,7 @@ is($res, "genes: 2\nontology terms: 6\n", "test that gene2biofun stats are ok");
 
 ## test gene2biofun with header
 my $gafheader= "t/data/test_goa_chicken_header.gaf";
-open $fh, ">", $gafheader; 
+open $fh, ">", $gafheader;
 open FH, "<", $gafile;
 while(<FH>){
     if($.<2){print $fh "!\n#header gaf file\n \n";}
@@ -46,7 +46,7 @@ close $fh;
 ($res,$stat)= gene2biofun($gafheader, $geneindex, $classindex);
 my $annfile_header= "t/data/test_chicken_uniprot2go_header.txt";
 open $fh, ">", $annfile_header;
-foreach my $k (sort{$a cmp $b} keys %$res) { print $fh "$k $$res{$k}\n";} 
+foreach my $k (sort{$a cmp $b} keys %$res) { print $fh "$k $$res{$k}\n";}
 close $fh;
 $res= ${$stat};
 

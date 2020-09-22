@@ -1,16 +1,16 @@
 #!/usr/bin/perl
 
-## loading obogaf::parser and 
+## loading obogaf::parser and
 use strict;
 use warnings;
 use obogaf::parser qw(:all);
 
-## elapased time 
+## elapased time
 use Time::HiRes qw(time);
 my $start= time;
 
 ## recursively create directories ([-p] mkdir option in perl does not work)
-use File::Path qw(make_path); 
+use File::Path qw(make_path);
 
 ## create folder where storing example I/O files
 my $basedir= "data/";
@@ -21,10 +21,10 @@ make_path($basedir) unless(-d $basedir);
 # my $basedir = File::HomeDir->my_home."/data/";
 # mkdir $basedir unless(-e $basedir);
 
-## declare variables 
-my ($res, $stat, $parentIndex, $childIndex, $geneindex, $classindex, $parlist, $pares, $chdlist, $chdres); 
+## declare variables
+my ($res, $stat, $parentIndex, $childIndex, $geneindex, $classindex, $parlist, $pares, $chdlist, $chdres);
 
-## ~~ GO OBO ~~ ## 
+## ~~ GO OBO ~~ ##
 ## download GO obo file
 my $obofile= $basedir."gobasic.obo";
 my $gobo= qx{wget --output-document=$obofile http://purl.obolibrary.org/obo/go/go-basic.obo};
@@ -38,15 +38,15 @@ foreach my $go (@terms){print OUT "$go\n";}
 close OUT;
 
 $res= obo_filter($obofile, $termsfile);
-my $newobo= $basedir."go-shrunk.obo"; 
-open OUT, ">", $newobo; 
+my $newobo= $basedir."go-shrunk.obo";
+open OUT, ">", $newobo;
 print OUT "${$res}";
 close OUT;
 
 ## extract edges from GO obo file
 my $gores= build_edges($obofile);
-my $goedges= $basedir."gobasic-edges.txt"; ## go edges file declared here 
-open FH, "> $goedges"; 
+my $goedges= $basedir."gobasic-edges.txt"; ## go edges file declared here
+open FH, "> $goedges";
 print FH "${$gores}"; ## scalar dereferencing
 close FH;
 print "build GO edges: done\n\n";
@@ -122,7 +122,7 @@ close FH;
 print "${$stat}\n";
 print "build GOA annotations (CHICKEN): done\n\n";
 
-## ~~ MAP GO TERMS BETWEEN RELEASE ~~ ## 
+## ~~ MAP GO TERMS BETWEEN RELEASE ~~ ##
 ## download old GOA CHICKEN annotation file
 my $goafileOld= $basedir."goa_chicken.gaf.128.gz"; ## goa annotation file declared here
 my $goachickenOld= qx{wget --output-document=$goafileOld ftp://ftp.ebi.ac.uk/pub/databases/GO/goa/old/CHICKEN/goa_chicken.gaf.128.gz};
@@ -130,12 +130,12 @@ my $goachickenOld= qx{wget --output-document=$goafileOld ftp://ftp.ebi.ac.uk/pub
 ## map GO terms between release
 ($res, $stat)= map_OBOterm_between_release($obofile, $goafileOld, $classindex);
 my $mapfile= $basedir."chicken.goa.mapped.txt";
-open FH, "> $mapfile"; 
+open FH, "> $mapfile";
 print FH "${$res}";
 close FH;
 print "${$stat}";
 
-## ~~ ELAPSED TIME ~~ ## 
+## ~~ ELAPSED TIME ~~ ##
 print "\n\n";
 my $span= time - $start;
 $span= sprintf("%.4f", $span);

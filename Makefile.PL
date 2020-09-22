@@ -16,7 +16,7 @@ WriteMakefile(
         'List::MoreUtils'   => 0
     },
     TEST_REQUIRES  => {
-        'Test::More'            => 0, 
+        'Test::More'            => 0,
         'Test::Exception'       => 0,
         'Test::Files'           => 0
     },
@@ -49,11 +49,11 @@ WriteMakefile(
                     t/data/test_gofiltered.obo
                     t/data/test_fake_goterms.txt"
     },
-    (eval { ExtUtils::MakeMaker->VERSION(6.46) } ? ( 
+    (eval { ExtUtils::MakeMaker->VERSION(6.46) } ? (
         META_MERGE => {
             'meta-spec' => { version => 2 },
             resources => {
-                repository => {                    
+                repository => {
                     type      => 'git',
                     web       => 'https://github.com/marconotaro/obogaf-parser',
                     url       => 'git://github.com/marconotaro/obogaf-parser.git',

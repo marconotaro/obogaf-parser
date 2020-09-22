@@ -6,7 +6,7 @@ use Test::Files;
 use obogaf::parser qw(get_parents_or_children_list build_edges build_subonto);
 
 # input files/variables
-my $goedges=     "t/data/test_gobasic_edges.txt"; 
+my $goedges=     "t/data/test_gobasic_edges.txt";
 my $fakegoedges= "t/data/test_GObasic_edges.txt";
 my ($parentIndex, $childIndex)= (1,2);
 
@@ -16,7 +16,7 @@ my ($res,$gores,$chdlist,$parlist,$fh,$chdORpar);
 ## build $goedges
 my $obofile=  "t/data/test_gobasic.obo";
 $gores= build_edges($obofile);
-open $fh, ">", $goedges; 
+open $fh, ">", $goedges;
 print $fh "${$gores}";
 close $fh;
 
@@ -54,7 +54,7 @@ file_ok($chdlist, "GO:0007259 GO:0007260\nGO:0018108 GO:0007260\n", "test that g
 my $domain= "biological_process";
 my $gobp= "t/data/test_gobasic_edgesBP.txt";
 $gores= build_subonto($goedges, $domain);
-open $fh, ">", $gobp; 
+open $fh, ">", $gobp;
 print $fh "${$gores}";
 close $fh;
 

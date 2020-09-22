@@ -33,7 +33,7 @@
 #### obogaf::parser 1.016
 
 ###### Changes
-- add some degenerate test 
+- add some degenerate test
 - add homepage in Makefile.PL
 
 #### obogaf::parser 1.015
@@ -62,13 +62,13 @@
 #### obogaf::parser 1.002
 
 ###### Changes
-- fix CPANTS issues 
+- fix CPANTS issues
 
 #### obogaf::parser 1.001
 
 ###### Changes
 - add test
-- fix minor bugs 
+- fix minor bugs
 - create documentations on Read the Docs (https://obogaf-parser.readthedocs.io)
 
 #### obogaf::parser 0.001

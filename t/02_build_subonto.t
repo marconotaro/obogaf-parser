@@ -6,7 +6,7 @@ use Test::Files;
 use obogaf::parser qw(build_edges build_subonto);
 
 ## input files and variable
-my $goedges = "t/data/test_gobasic_edges.txt"; 
+my $goedges = "t/data/test_gobasic_edges.txt";
 my $fakedge = "t/data/test_GOBASIC_edges.txt";
 my $domain  =  "biological_process";
 
@@ -16,7 +16,7 @@ my ($gores, $fh);
 ## build $goedges
 my $obofile = "t/data/test_gobasic.obo";
 $gores= build_edges($obofile);
-open $fh, ">", $goedges; 
+open $fh, ">", $goedges;
 print $fh "${$gores}";
 close $fh;
 
@@ -26,13 +26,13 @@ dies_ok (  sub { my $file = build_subonto($fakedge, $domain) }, 'die: wrong file
 
 ## test normal case
 $gores= build_subonto($goedges, $domain);
-my $gobp= "t/data/test_gobasic_edgesBP.txt"; 
-open $fh, ">", $gobp; 
+my $gobp= "t/data/test_gobasic_edgesBP.txt";
+open $fh, ">", $gobp;
 print $fh "${$gores}";
 close $fh;
 file_ok($gobp,  "GO:0018108\tGO:0007260\tpeptidyl-tyrosine phosphorylation\ttyrosine phosphorylation of STAT protein\tis-a\nGO:0007259\tGO:0007260\treceptor signaling pathway via JAK-STAT\ttyrosine phosphorylation of STAT protein\tpart-of\n", "test that build_subonto works");
 
-## test dead and special case 
+## test dead and special case
 my $gobp_header= "t/data/test_gobasic_edges_header.txt";
 open $fh, ">", $gobp_header;
 open FH, "<", $goedges;
@@ -40,7 +40,7 @@ while(<FH>){
     if($.<2){print $fh "!header\n"}
     my @vals= split(/\t/,$_);
     print $fh join("\t", @vals[1..$#vals]);
-} 
+}
 close FH;
 close $fh;
 dies_ok ( sub { my $file = build_subonto($gobp_header, $domain) }, 'die: wrong column number');
