@@ -4,5 +4,4 @@
 History
 =======
 
-.. literalinclude:: ../Changes
-    :language: text
+.. mdinclude:: ../Changes
