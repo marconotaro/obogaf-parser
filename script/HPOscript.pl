@@ -13,7 +13,6 @@ my $start= time;
 use File::Path qw(make_path); 
 
 ## create folder where storing example I/O files
-use File::Path qw(make_path);
 my $basedir= "data/";
 make_path($basedir) unless(-d $basedir);
 
