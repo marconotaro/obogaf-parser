@@ -4,7 +4,7 @@
 Quickstart
 ============
 
-This short How-To guides you from downloading ``obogaf::parser`` to make your first parsing with ``obogaf::parser``.
+This short *HowTo* guides you from downloading ``obogaf::parser`` to make your first parsing with ``obogaf::parser``.
 
 Installation
 =====================
@@ -32,7 +32,7 @@ To run the Perl script you can make it executable by typing ``chmod +x perl-scri
 Your first parsing 
 ==========================
 
-Let us use ``obogaf::parser`` to extract edges (in the form ``source-destination``) from the Gene Ontology (GO) obo file. Firstly we must download the GO obo file from the `Gene Ontoloy website <http://geneontology.org/docs/download-ontology/>`_. Then we use ``obogaf-parser`` to extract edges.
+Let us use ``obogaf::parser`` to extract edges (in the form ``source-destination``) from the Gene Ontology (GO) obo file. Firstly we must download the GO obo file from the `Gene Ontoloy website <http://geneontology.org/docs/download-ontology/>`_. Then we use ``obogaf::parser`` to extract edges.
 
 .. code-block:: perl
     

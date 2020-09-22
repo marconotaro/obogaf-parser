@@ -3,15 +3,14 @@
 Tutorial
 ========
 
-Here we show a step-by-step application of ``obogaf::parser`` by using the Gene Ontology (``GO``) and the Human Phenotype Ontology (``HPO``) and their respective annotation file. The snippets of Perl code shown in the examples below are glued together respectively in the script ``GOscript.pl`` and ``HPOscript.pl`` stored in ``script`` folder of the github repository (`link <https://github.com/marconotaro/obogaf-parser/tree/master/script/>`__).
+Here we show a step-by-step application of ``obogaf::parser`` by using the Gene Ontology (GO) and the Human Phenotype Ontology (HPO) and their respective annotation file. The snippets of Perl code shown in the examples below are glued together respectively in the script ``GOscript.pl`` and ``HPOscript.pl`` stored in ``script`` folder of the github repository (`link <https://github.com/marconotaro/obogaf-parser/tree/master/script/>`__).
 
-----
+.. note::
 
-The experiments run on this tutorial were executed by using the ``obogaf::parser`` version ``1.373``, the Perl version ``5.26.1`` and on a machine having Ubuntu 18.04 as operative system.
+   The experiments run on this tutorial were executed by using the ``obogaf::parser`` version ``1.373``, the Perl version ``5.26.1`` and on a machine having Ubuntu 18.04 as operative system.
 
-----
 
-Application to the Gene Ontology (GO)
+Gene Ontology (GO)
 -------------------------------------
 
 For all the examples shown in this tutorial, we store I/O files in the directory ``data``: 
@@ -23,7 +22,7 @@ For all the examples shown in this tutorial, we store I/O files in the directory
 Parse the GO obo file
 ~~~~~~~~~~~~~~~~~~~~~
 
-First of all we must download the *obo* file from the `Gene Ontoloy website <http://geneontology.org/docs/download-ontology/>`_. We download the *basic* version of the **GO**, because this version excludes relationships that cross the 3 **GO** hierarchies (``BP``, ``MF``, ``CC``). To do that in a Linux environment, just type on the bash:
+First of all we must download the *obo* file from the `Gene Ontoloy website <http://geneontology.org/docs/download-ontology/>`_. We download the *basic* version of the GO, because this version excludes relationships that cross the 3 GO hierarchies (BP, MF, CC). To do that in a Linux environment, just type on the bash:
 
 .. code-block:: bash
 
@@ -195,7 +194,7 @@ The returned narrowed ``obo`` file looks as the following:
    synonym: "very-long-chain fatty acid metabolism" EXACT []
    is_a: GO:0006631 ! fatty acid metabolic process
 
-To extrapolate the **GO** edges from the ``gobasic.obo`` file, we can use the subroutine ``build_edges``. This subroutine receives in input the ``obo`` file:
+To extrapolate the GO edges from the ``gobasic.obo`` file, we can use the subroutine ``build_edges``. This subroutine receives in input the ``obo`` file:
 
 .. code-block:: perl
 
@@ -241,9 +240,9 @@ For the sake of the space, below we just show the first ``25`` lines of the outp
 
    ... to be continued ...
 
-The first column of the output file refers to the domain whose a **GO** term belong to, the second and the third column represent the edge as pair of nodes in the form ``source (parent) - destination (child)``, the fourth and the fifth column are the name of the source and destination obo term ID and the sixth column refers to the kind of relationships. This column can assume only two values, ``is-a`` and ``part-of``, since it is safe grouping annotations by using both these relationships. For more details about **GO** relationships have a look at this `link <http://geneontology.org/docs/ontology-relations/>`__.
+The first column of the output file refers to the domain whose a GO term belong to, the second and the third column represent the edge as pair of nodes in the form ``source (parent) - destination (child)``, the fourth and the fifth column are the name of the source and destination obo term ID and the sixth column refers to the kind of relationships. This column can assume only two values, ``is-a`` and ``part-of``, since it is safe grouping annotations by using both these relationships. For more details about GO relationships have a look at this `link <http://geneontology.org/docs/ontology-relations/>`__.
 
-To isolate nodes and relationships belonging to one of the **GO** sub-ontology (e.g. ``biological_process (BP)``), we can use the subroutine ``build_subonto``. This subroutine receives in input the edges file obtained by calling ``build_edges`` and the specific sub-domain for which we want to extrapolate edges. 
+To isolate nodes and relationships belonging to one of the GO sub-ontology (e.g. ``biological_process (BP)``), we can use the subroutine ``build_subonto``. This subroutine receives in input the edges file obtained by calling ``build_edges`` and the specific sub-domain for which we want to extrapolate edges. 
 
 .. code-block:: perl
 
@@ -280,7 +279,7 @@ It is worth noting that the same output can be also achieved by using the ``grep
 
    $ grep "biological_process" data/gobasic-edges.txt | cut -f2- > data/gobasic-edgesBP.txt
 
-If we want to isolate nodes and relationships separately for each **GO** subontology at one fell swoop, by Perl:
+If we want to isolate nodes and relationships separately for each GO subontology at one fell swoop, by Perl:
 
 .. code-block:: perl
 
@@ -309,10 +308,10 @@ and by bash:
        grep ${domains[$i]} data/gobasic-edges.txt | cut -f2- > data/gobasic-edges${aspects[$i]}.txt
    done
 
-To print some statistics on the ``GO`` graph, we can use the subroutine ``make_stat``. The input arguments required by this subroutine are:
+To print some statistics on the GO graph, we can use the subroutine ``make_stat``. The input arguments required by this subroutine are:
 
 
-#. ``$goedges``: file containing the ``GO`` graph represented as a list of edges where each edge is turn represented as a pair of vertices ``tab`` separated (``$goedges`` file can be obtained by calling the ``build_edges`` subroutine)
+#. ``$goedges``: file containing the GO graph represented as a list of edges where each edge is turn represented as a pair of vertices ``tab`` separated (``$goedges`` file can be obtained by calling the ``build_edges`` subroutine)
 #. ``$parentIndex`` and ``$childIndex``: index referring restrictively to the column containing the ``source`` and ``destination`` nodes in the ``$goedges`` file (reminder: Perl starts counting from zero).
 
 .. code-block:: perl
@@ -347,7 +346,7 @@ To print some statistics on the ``GO`` graph, we can use the subroutine ``make_s
 
 As we can observe from the snippet above, for each node of the graph, ``degree``, ``in-degree`` and ``out-degree`` are printed. Nodes are sorted in a decreasing order on the basis of degree, from the higher to the smaller one. In addition the following statistics are also returned: 1) number of nodes and edges of the graph; 2) maximum and minimum degree; 3) average and median degree; 4) density of the graph. 
 
-To compute the stats just for a specific ``GO`` subontology (e.g. ``GO BP``) we can always use ``make_stat``, by properly setting its input arguments:
+To compute the stats just for a specific GO subontology (e.g. ``GO BP``) we can always use ``make_stat``, by properly setting its input arguments:
 
 .. code-block:: perl
 
@@ -424,7 +423,7 @@ Below we show few lines of ``gobasic-parGO.txt`` as example:
 
    ... to be continued ...
 
-The first column contains a ``GO`` term whereas the second one contains the list (pipe separated) of its parent terms. The file ``gobasic-chdGO.txt`` has the same structure, but instead of parents list contains the children list.
+The first column contains a GO term whereas the second one contains the list (pipe separated) of its parent terms. The file ``gobasic-chdGO.txt`` has the same structure, but instead of parents list contains the children list.
 
 Obviously, ``obogaf::parser::get_parents_or_children_list`` can also be run on a subontology file (e.g. ``gobasic-edgesBP.txt``). The only thing to do is to proper set the parameters ``$parentIndex`` and ``$childIndex``.
 
@@ -478,7 +477,7 @@ Now we can build the list of annotations by using the subroutine ``gene2biofun``
 
 
 #. ``$inputfile``: ``GOA`` annotation file for the ``CHICKEN`` organism;
-#. ``$geneindex``: and ``$geneindex``: index referring respectively to the column containing the proteins and the ``GO`` term in the ``$inputfile`` file.
+#. ``$geneindex``: and ``$geneindex``: index referring respectively to the column containing the proteins and the GO term in the ``$inputfile`` file.
 
 .. code-block:: perl
 
@@ -495,7 +494,7 @@ Now we can build the list of annotations by using the subroutine ``gene2biofun``
    genes: 15695
    ontology terms: 13953
 
-``gene2biofun`` returns a list of two anonymous references. The first is an anonymous hash storing for each UniProtKB protein all its associated ``GO`` terms (pipe separated). The second is an anonymous scalar containing basic statistics such as the total unique number of proteins and ontology terms. In the example above the anonymous hash is addressed in the output file ``data/chicken.uniprot2go.txt`` and the stats are printed on the shell. Finally, it is worth noting that ``gene2biofun`` can handle both compress ``.gz`` file and plain ``.txt`` file. Below we report as an example a snapshot of the associations between UniProtKB entry and ``GO`` terms obtained by running ``gene2biofun`` and stored in the file ``data/chicken.uniprot2go.txt`` (``head -n10 data/chicken.uniprot2go.txt``):
+``gene2biofun`` returns a list of two anonymous references. The first is an anonymous hash storing for each UniProtKB protein all its associated GO terms (pipe separated). The second is an anonymous scalar containing basic statistics such as the total unique number of proteins and ontology terms. In the example above the anonymous hash is addressed in the output file ``data/chicken.uniprot2go.txt`` and the stats are printed on the shell. Finally, it is worth noting that ``gene2biofun`` can handle both compress ``.gz`` file and plain ``.txt`` file. Below we report as an example a snapshot of the associations between UniProtKB entry and GO terms obtained by running ``gene2biofun`` and stored in the file ``data/chicken.uniprot2go.txt`` (``head -n10 data/chicken.uniprot2go.txt``):
 
 .. code-block:: text
    
@@ -515,7 +514,7 @@ Now we can build the list of annotations by using the subroutine ``gene2biofun``
 Map GO terms between releases
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-In time-lapse hold-out experiments we use annotations of an old ``GO`` release to predict the protein function of a more recent ``GO`` release. However, between different ``GO`` releases some ontology terms could be removed, others changed or become obsolete. Then before beginning time-lapse hold-out experiments, we need to map the old ``GO`` terms to the new ones by parsing the annotation file of an *old* ``GO`` release using as **key** the *alt-ID* taken from the obo file of the *new* ``GO`` release . The subroutine ``map_OBOterm_between_release`` does that for us.
+In time-lapse hold-out experiments we use annotations of an old GO release to predict the protein function of a more recent GO release. However, between different GO releases some ontology terms could be removed, others changed or become obsolete. Then before beginning time-lapse hold-out experiments, we need to map the old GO terms to the new ones by parsing the annotation file of an *old* GO release using as **key** the *alt-ID* taken from the obo file of the *new* GO release . The subroutine ``map_OBOterm_between_release`` does that for us.
 
 Firstly, we must download the old annotation file of the ``CHICKEN`` organism in the ``data`` directory (here we use the ``07/06/16`` release):
 
@@ -526,9 +525,9 @@ Firstly, we must download the old annotation file of the ``CHICKEN`` organism in
 The input arguments required by ``map_OBOterm_between_release`` are:
 
 
-#. ``$obofile``: the *new* release of a ``GO`` obo file (here we use the ``01/07/19`` release). This file is used to make the ``alt_id - id`` pairing by using ``alt_id`` as key;
+#. ``$obofile``: the *new* release of a GO obo file (here we use the ``01/07/19`` release). This file is used to make the ``alt_id - id`` pairing by using ``alt_id`` as key;
 #. ``$goafileOld``: the *old* release of an annotation file (for this example we use ``07/06/16`` release);
-#. ``$classindex``: the index referring to the column of the ``$goafileOld`` containing the ontology terms to be mapped (in the ``GOA`` file the ``GO`` terms are in the 4 columns -- NB: we must start to count from zero).
+#. ``$classindex``: the index referring to the column of the ``$goafileOld`` containing the ontology terms to be mapped (in the ``GOA`` file the GO terms are in the 4 columns -- NB: we must start to count from zero).
 
 .. code-block:: perl
 
@@ -598,15 +597,15 @@ To give an example, below we show the first ``23`` lines of the file ``go.ann.di
    > UniProtKB A4GTP0   A4GTP0      GO:0003723  GO_REF:0000019 IEA   Ensembl:ENSP00000254301 F  Galectin A4GTP0_CHICK   protein  taxon:9031  20160507 Ensembl     
    321c321
 
-Application to Human Phenotype Ontology (HPO)
----------------------------------------------
+Human Phenotype Ontology (HPO)
+-----------------------------------
 
-Here we show how to use ``obogaf::parser`` on the ``HPO`` obo file and its annotation file. Here we go faster, because the experiments are carried-out in the same way of those shown above with the ``GO``. 
+Here we show how to use ``obogaf::parser`` on the HPO obo file and its annotation file. Here we go faster, because the experiments are carried-out in the same way of those shown above with the GO. 
 
 Parse the HPO obo file
 ~~~~~~~~~~~~~~~~~~~~~~
 
-Here we use ``obogaf::parser`` to handle the ``HPO`` obo file and return some basic statistics. For this example we use the ``2019-11-08`` ``HPO`` obo release.
+Here we use ``obogaf::parser`` to handle the HPO obo file and return some basic statistics. For this example we use the ``2019-11-08`` HPO obo release.
 
 .. code-block:: perl
 
@@ -693,7 +692,7 @@ Here we use ``obogaf::parser`` to handle the ``HPO`` obo file and return some ba
 Parse the HPO annotation file
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Here we use ``obogaf::parser`` to parse the ``HPO`` annotation file (release ``2019-11-08``)
+Here we use ``obogaf::parser`` to parse the HPO annotation file (release ``2019-11-08``)
 
 .. code-block:: perl
 
@@ -746,7 +745,7 @@ Below we show the first ``10`` lines of the ``hpo.gene2pheno.txt`` file, just to
 Map HPO terms between releases
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Here we use ``obogaf::parser`` to map the ``HPO`` terms of an *old* release (``2018-09-03``) toward a *new* ones (``2019-11-08``).
+Here we use ``obogaf::parser`` to map the HPO terms of an *old* release (``2018-09-03``) toward a *new* ones (``2019-11-08``).
 
 .. code-block:: perl
 
@@ -817,7 +816,7 @@ Here we use ``obogaf::parser`` to map the ``HPO`` terms of an *old* release (``2
    Tot. altID seen:  31
    Tot. altID unseen:   3604
 
-By running the ``diff`` command between the *old* file (``hpo.ann.old.txt``) and the *mapped* one (``hpo.ann.mapped.txt``) and redirecting the results on a output file (e.g.: ``diff hpo.ann.old.txt hpo.ann.mapped.txt > hpo.ann.diff``) we can easily visualize the changed ``HPO`` terms between the two release. Below  we show just some few lines of ``hpo.ann.diff`` to give an example:
+By running the ``diff`` command between the *old* file (``hpo.ann.old.txt``) and the *mapped* one (``hpo.ann.mapped.txt``) and redirecting the results on a output file (e.g.: ``diff hpo.ann.old.txt hpo.ann.mapped.txt > hpo.ann.diff``) we can easily visualize the changed HPO terms between the two release. Below  we show just some few lines of ``hpo.ann.diff`` to give an example:
 
 .. code-block:: diff
 
