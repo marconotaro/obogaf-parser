@@ -37,7 +37,8 @@ To call an ``obogaf::parser`` subroutine you must preface the subroutine's name 
 
     usage
     tutorial
-
+    script 
+    
 .. toctree::
     :caption: Tips & Tricks
     :name: tips-tricks
