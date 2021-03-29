@@ -1,14 +1,18 @@
 .. _tutorial:
 
+==========
 Tutorial
-========
+==========
 
-Here we show a step-by-step application of ``obogaf::parser`` by using the Gene Ontology (GO) and the Human Phenotype Ontology (HPO) and their respective annotation file. The snippets of Perl code shown in the examples below are glued together respectively in the script ``GOscript.pl`` and ``HPOscript.pl`` stored in ``script`` folder of the github repository (`link <https://github.com/marconotaro/obogaf-parser/tree/master/script/>`__).
+Here we show a step-by-step application of ``obogaf::parser`` by using the Gene Ontology (GO) and the Human Phenotype Ontology (HPO) and their respective annotation file. The snippets of Perl code shown in the examples below are glued together respectively in the script ``GOscript.pl`` and ``HPOscript.pl`` shown in the page :ref:`script`.
 
 .. note::
 
-   The experiments run on this tutorial were executed by using the ``obogaf::parser`` version ``1.373``, the Perl version ``5.26.1`` and on a machine having Ubuntu 18.04 as operative system.
+    To run the experiments shown below, make sure you match the following requirements:
 
+        - obogaf::parser >= 1.373
+        - Perl >= 5.22.1
+        - Ubuntu >= 16.04
 
 Gene Ontology (GO)
 -------------------------------------
