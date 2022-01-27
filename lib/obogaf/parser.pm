@@ -6,15 +6,15 @@ $VERSION= eval $VERSION;
 require Exporter;
 our @ISA= qw(Exporter);
 our %EXPORT_TAGS=(
-    all => [qw(
-        &build_edges
-        &build_subonto
-        &make_stat
-        &get_parents_or_children_list
-        &obo_filter
-        &gene2biofun
-        &map_OBOterm_between_release
-    )],
+  all => [qw(
+    &build_edges
+    &build_subonto
+    &make_stat
+    &get_parents_or_children_list
+    &obo_filter
+    &gene2biofun
+    &map_OBOterm_between_release
+  )],
 );
 our @EXPORT_OK= (@{$EXPORT_TAGS{'all'}});
 
@@ -26,250 +26,250 @@ use IO::File;
 use PerlIO::gzip;
 
 sub build_edges{
-    my ($obofile)= @_;
-    my ($namespace, $idname, $isname, $pofname, $source, $destination, $pof, $res);
-    if($obofile=~/.obo$/i){ open FH, "<", "$obofile" or die "cannot open $obofile. $!.\n"; }
-    while(<FH>){
-        chomp;
-        next if $_=~/^\s*$/;
-        if($_=~/^namespace:\s+(\D+)/){
-            $namespace=$1;
-        }elsif($_=~/^name:\s+(.+)/){
-            $idname=$1;
-        }elsif($_=~/^id:\s+(\D+\d+)/){
-            $destination=$1;
-        }elsif($_=~/^is_a:\s+(\D+\d+)/){
-            $source=$1;
-            ($isname)= ($_=~/!\s+(.+)/);
-            if(defined $namespace){
-                $res .= "$namespace\t$source\t$destination\t$isname\t$idname\tis-a\n";
-            }else{
-                $res .= "$source\t$destination\t$isname\t$idname\tis-a\n";
-            }
-        }elsif($_=~/^relationship: part_of\s+(\D+\d+)/){
-            $pof=$1;
-            ($pofname)= ($_=~/!\s+(.+)/);
-            if(defined $namespace){
-                $res .= "$namespace\t$pof\t$destination\t$pofname\t$idname\tpart-of\n";
-            }else{
-                $res .= "$pof\t$destination\t$pofname\t$idname\tpart-of\n";
-            }
-        }
+  my ($obofile)= @_;
+  my ($namespace, $idname, $isname, $pofname, $source, $destination, $pof, $res);
+  if($obofile=~/.obo$/i){ open FH, "<", "$obofile" or die "cannot open $obofile. $!.\n"; }
+  while(<FH>){
+    chomp;
+    next if $_=~/^\s*$/;
+    if($_=~/^namespace:\s+(\D+)/){
+      $namespace=$1;
+    }elsif($_=~/^name:\s+(.+)/){
+      $idname=$1;
+    }elsif($_=~/^id:\s+(\D+\d+)/){
+      $destination=$1;
+    }elsif($_=~/^is_a:\s+(\D+\d+)/){
+      $source=$1;
+      ($isname)= ($_=~/!\s+(.+)/);
+      if(defined $namespace){
+        $res .= "$namespace\t$source\t$destination\t$isname\t$idname\tis-a\n";
+      }else{
+        $res .= "$source\t$destination\t$isname\t$idname\tis-a\n";
+      }
+    }elsif($_=~/^relationship: part_of\s+(\D+\d+)/){
+      $pof=$1;
+      ($pofname)= ($_=~/!\s+(.+)/);
+      if(defined $namespace){
+        $res .= "$namespace\t$pof\t$destination\t$pofname\t$idname\tpart-of\n";
+      }else{
+        $res .= "$pof\t$destination\t$pofname\t$idname\tpart-of\n";
+      }
     }
-    close FH;
-    return \$res;
+  }
+  close FH;
+  return \$res;
 }
 
 sub build_subonto{
-    my ($edgesfile, $namespace)= @_;
-    my ($res, %checker);
-    open FH, "<", $edgesfile or die "cannot open $edgesfile. $!.\n";
-    while(<FH>){
-        next if $_=~/^[!,#]|^\s*$/;
-        my @vals= split(/\t/, $_);
-        $checker{$vals[0]}=1;
-        if($vals[0] eq $namespace){ $res .= join("\t", @vals[1..$#vals]); }
-    }
-    close FH;
-    unless(exists($checker{$namespace})){die "$edgesfile does not include $namespace or $namespace is not in the first column of $edgesfile.\n";}
-    return \$res;
+  my ($edgesfile, $namespace)= @_;
+  my ($res, %checker);
+  open FH, "<", $edgesfile or die "cannot open $edgesfile. $!.\n";
+  while(<FH>){
+    next if $_=~/^[!,#]|^\s*$/;
+    my @vals= split(/\t/, $_);
+    $checker{$vals[0]}=1;
+    if($vals[0] eq $namespace){ $res .= join("\t", @vals[1..$#vals]); }
+  }
+  close FH;
+  unless(exists($checker{$namespace})){die "$edgesfile does not include $namespace or $namespace is not in the first column of $edgesfile.\n";}
+  return \$res;
 }
 
 sub make_stat{
-    my ($edgesfile, $parentIndex, $childIndex)= @_;
-    my (%indeg, %outdeg, %deg, $ed, $nd, $mindeg, $maxdeg, $medeg, $avgdeg, $den, $scc, $resdeg, $stat, $res);
-    ## create graph
-    my $g= Graph->new(directed => 1);
-    open FH, "<", $edgesfile or die "cannot open $edgesfile. $!.\n";
-    while(<FH>){
-        chomp;
-        my @vals= split(/\t/,$_);
-        $g->add_edge($vals[$parentIndex], $vals[$childIndex]);
-    }
-    close FH;
-    ## compute indegree/outdegree/degree
-    my @V= $g->vertices;
-    foreach my $nd (@V){
-        my $i= $g->in_degree($nd);
-        my $o= $g->out_degree($nd);
-        my $d= $i+$o;
-        $indeg{$nd}=$i;
-        $outdeg{$nd}=$o;
-        $deg{$nd}=$d;
-    }
-    foreach my $node (sort{$deg{$b}<=>$deg{$a} or ($a cmp $b)} keys %deg){ $resdeg .= "$node\t$deg{$node}\t$indeg{$node}\t$outdeg{$node}\n"; }
-    ## compute: median/max/min degree
-    my @sortdeg= sort{$a<=>$b} values (%deg);
-    my $len= $#sortdeg+1;
-    my $mid = int $len/2;
-    if($len % 2){ $medeg = $sortdeg[$mid]; }else{ $medeg = ( $sortdeg[$mid-1] + $sortdeg[$mid] ) / 2; }
-    $medeg= sprintf("%.4f", $medeg);
-    $mindeg= $sortdeg[0];
-    $maxdeg= $sortdeg[$#sortdeg];
-    ## compute number of nodes and edges
-    $ed= $g->edges;
-    $nd= $g->vertices;
-    ## compute average degree and density
-    $avgdeg= $ed/$nd;
-    $den= $ed / ( $nd * ($nd -1) );
-    $avgdeg= sprintf("%.4f", $avgdeg);
-    $den= sprintf("%.4e", $den);
-    ## return stat
-    $stat .= "nodes: $nd\nedges: $ed\nmax degree: $maxdeg\nmin degree: $mindeg\n";
-    $stat .= "median degree: $medeg\naverage degree: $avgdeg\ndensity: $den\n";
-    $res= "#oboterm <tab> degree <tab> indegree <tab> outdegree\n".$resdeg."\n"."~summary stat~\n".$stat;
-    return $res;
+  my ($edgesfile, $parentIndex, $childIndex)= @_;
+  my (%indeg, %outdeg, %deg, $ed, $nd, $mindeg, $maxdeg, $medeg, $avgdeg, $den, $scc, $resdeg, $stat, $res);
+  ## create graph
+  my $g= Graph->new(directed => 1);
+  open FH, "<", $edgesfile or die "cannot open $edgesfile. $!.\n";
+  while(<FH>){
+    chomp;
+    my @vals= split(/\t/,$_);
+    $g->add_edge($vals[$parentIndex], $vals[$childIndex]);
+  }
+  close FH;
+  ## compute indegree/outdegree/degree
+  my @V= $g->vertices;
+  foreach my $nd (@V){
+    my $i= $g->in_degree($nd);
+    my $o= $g->out_degree($nd);
+    my $d= $i+$o;
+    $indeg{$nd}=$i;
+    $outdeg{$nd}=$o;
+    $deg{$nd}=$d;
+  }
+  foreach my $node (sort{$deg{$b}<=>$deg{$a} or ($a cmp $b)} keys %deg){ $resdeg .= "$node\t$deg{$node}\t$indeg{$node}\t$outdeg{$node}\n"; }
+  ## compute: median/max/min degree
+  my @sortdeg= sort{$a<=>$b} values (%deg);
+  my $len= $#sortdeg+1;
+  my $mid = int $len/2;
+  if($len % 2){ $medeg = $sortdeg[$mid]; }else{ $medeg = ( $sortdeg[$mid-1] + $sortdeg[$mid] ) / 2; }
+  $medeg= sprintf("%.4f", $medeg);
+  $mindeg= $sortdeg[0];
+  $maxdeg= $sortdeg[$#sortdeg];
+  ## compute number of nodes and edges
+  $ed= $g->edges;
+  $nd= $g->vertices;
+  ## compute average degree and density
+  $avgdeg= $ed/$nd;
+  $den= $ed / ( $nd * ($nd -1) );
+  $avgdeg= sprintf("%.4f", $avgdeg);
+  $den= sprintf("%.4e", $den);
+  ## return stat
+  $stat .= "nodes: $nd\nedges: $ed\nmax degree: $maxdeg\nmin degree: $mindeg\n";
+  $stat .= "median degree: $medeg\naverage degree: $avgdeg\ndensity: $den\n";
+  $res= "#oboterm <tab> degree <tab> indegree <tab> outdegree\n".$resdeg."\n"."~summary stat~\n".$stat;
+  return $res;
 }
 
 sub get_parents_or_children_list{
-    my ($edgesfile, $parentIndex, $childIndex, $chdORpar)= @_;
-    my (%nodelist, %outlist);
-    if($chdORpar ne "parents" && $chdORpar ne "children"){ die "$chdORpar can be 'parents' or 'children'.\n";}
-    open FH, "<", $edgesfile or die "cannot open $edgesfile. $!.\n";
-    while(<FH>){
-        chomp;
-        my @vals= split(/\t/,$_);
-        if($chdORpar eq "parents"){
-            push (@{$nodelist{$vals[$childIndex]}}, $vals[$parentIndex]);
-        }else{
-            push (@{$nodelist{$vals[$parentIndex]}}, $vals[$childIndex]);
-        }
+  my ($edgesfile, $parentIndex, $childIndex, $chdORpar)= @_;
+  my (%nodelist, %outlist);
+  if($chdORpar ne "parents" && $chdORpar ne "children"){ die "$chdORpar can be 'parents' or 'children'.\n";}
+  open FH, "<", $edgesfile or die "cannot open $edgesfile. $!.\n";
+  while(<FH>){
+    chomp;
+    my @vals= split(/\t/,$_);
+    if($chdORpar eq "parents"){
+      push (@{$nodelist{$vals[$childIndex]}}, $vals[$parentIndex]);
+    }else{
+      push (@{$nodelist{$vals[$parentIndex]}}, $vals[$childIndex]);
     }
-    close FH;
-    foreach my $term (keys %nodelist){
-        $outlist{$term} = join('|', sort{($a=~/(\d+)/)[0] <=> ($b=~/(\d+)/)[0]} uniq @{$nodelist{$term}});
-    }
-    return \%outlist;
+  }
+  close FH;
+  foreach my $term (keys %nodelist){
+    $outlist{$term} = join('|', sort{($a=~/(\d+)/)[0] <=> ($b=~/(\d+)/)[0]} uniq @{$nodelist{$term}});
+  }
+  return \%outlist;
 }
 
 sub obo_filter{
-    my ($obofile, $termsfile)= @_;
-    my (@oboterms, $header, $counter, $res, $obo);
-    ## obo terms of interest
-    open FH, "<", "$termsfile" or die "cannot open $termsfile. $!.\n";
+  my ($obofile, $termsfile)= @_;
+  my (@oboterms, $header, $counter, $res, $obo);
+  ## obo terms of interest
+  open FH, "<", "$termsfile" or die "cannot open $termsfile. $!.\n";
+  while(<FH>){
+    chomp;
+    next if $_=~/^\s*$/;
+    push(@oboterms, $_);
+  }
+  close FH;
+  my @unique= do { my %seen; grep { !$seen{$_}++ } @oboterms};
+  @oboterms=@unique;
+  ## store obofile header
+  if($obofile=~/.obo$/i){ open FH, "<", "$obofile" or die "cannot open $obofile. $!.\n"; }
+  while(<FH>){
+    next unless 1 .. /\[Term\]/;
+    next if /^\[Term\]/;
+    $header .= $_;
+  }
+  ## extract from obo file the terms of interest
+  foreach my $oboterm (@oboterms){
+    $counter++;
+    open FH, $obofile;
     while(<FH>){
-        chomp;
-        next if $_=~/^\s*$/;
-        push(@oboterms, $_);
+      if(/^id:\s+($oboterm)/ .. (/^$/ || eof FH)){ ## check for end of file
+        $res .= $_;
+      }
     }
     close FH;
-    my @unique= do { my %seen; grep { !$seen{$_}++ } @oboterms};
-    @oboterms=@unique;
-    ## store obofile header
-    if($obofile=~/.obo$/i){ open FH, "<", "$obofile" or die "cannot open $obofile. $!.\n"; }
-    while(<FH>){
-        next unless 1 .. /\[Term\]/;
-        next if /^\[Term\]/;
-        $header .= $_;
-    }
-    ## extract from obo file the terms of interest
-    foreach my $oboterm (@oboterms){
-        $counter++;
-        open FH, $obofile;
-        while(<FH>){
-            if(/^id:\s+($oboterm)/ .. (/^$/ || eof FH)){ ## check for end of file
-                $res .= $_;
-            }
-        }
-        close FH;
-        print($counter, "\t", $oboterm, "\tdone\n");
-    }
-    unless(defined $res){ die "none obo terms listed in $termsfile file was found in $obofile file. $!.\n" }
-    ## print obofile filtered
-    $obo = $header.$res."\n";
-    $obo=~ s/\b(id:\s+(\D+\d+))/\[Term\]\n$1/g; ## note: word boundary (\b) is necessary to match only "id:"" and not "alt_id:" in the string $obo
-    return \$obo;
+    print($counter, "\t", $oboterm, "\tdone\n");
+  }
+  unless(defined $res){ die "none obo terms listed in $termsfile file was found in $obofile file. $!.\n" }
+  ## print obofile filtered
+  $obo = $header.$res."\n";
+  $obo=~ s/\b(id:\s+(\D+\d+))/\[Term\]\n$1/g; ## note: word boundary (\b) is necessary to match only "id:"" and not "alt_id:" in the string $obo
+  return \$obo;
 }
 
 sub gene2biofun{
-    my ($annfile, $geneIndex, $classIndex)= @_;
-    my (%gene2biofun, %biofun, @genes, @biofun, $stat)= ();
-    my ($sample, $oboterm)= (0)x2;
-    if($annfile=~/.gz$/i){ open FH, "<:gzip", $annfile or die "cannot open $annfile. $!.\n"; } else { open FH, "<", "$annfile" or die "cannot open $annfile. $!.\n"; }
-    while(<FH>){
-        next if $_=~/^[!,#]|^\s*$/;
-        chomp;
-        my @vals=split(/\t/,$_);
-        push(@genes, $vals[$geneIndex]);
-        push(@biofun, $vals[$classIndex]);
-        push(@{$biofun{$vals[$geneIndex]}}, $vals[$classIndex]);
-    }
-    close FH;
-    foreach my $gene (keys %biofun){
-        $gene2biofun{$gene} = join('|', sort{($a=~/(\d+)/)[0] <=> ($b=~/(\d+)/)[0]} uniq @{$biofun{$gene}});
-    }
-    my @uniqgenes= uniq @genes;
-    my @uniqpbiofun= uniq @biofun;
-    $sample= scalar(@uniqgenes);
-    $oboterm= scalar(@uniqpbiofun);
-    $stat .= "genes: $sample\nontology terms: $oboterm\n";
-    return (\%gene2biofun, \$stat);
+  my ($annfile, $geneIndex, $classIndex)= @_;
+  my (%gene2biofun, %biofun, @genes, @biofun, $stat)= ();
+  my ($sample, $oboterm)= (0)x2;
+  if($annfile=~/.gz$/i){ open FH, "<:gzip", $annfile or die "cannot open $annfile. $!.\n"; } else { open FH, "<", "$annfile" or die "cannot open $annfile. $!.\n"; }
+  while(<FH>){
+    next if $_=~/^[!,#]|^\s*$/;
+    chomp;
+    my @vals=split(/\t/,$_);
+    push(@genes, $vals[$geneIndex]);
+    push(@biofun, $vals[$classIndex]);
+    push(@{$biofun{$vals[$geneIndex]}}, $vals[$classIndex]);
+  }
+  close FH;
+  foreach my $gene (keys %biofun){
+    $gene2biofun{$gene} = join('|', sort{($a=~/(\d+)/)[0] <=> ($b=~/(\d+)/)[0]} uniq @{$biofun{$gene}});
+  }
+  my @uniqgenes= uniq @genes;
+  my @uniqpbiofun= uniq @biofun;
+  $sample= scalar(@uniqgenes);
+  $oboterm= scalar(@uniqpbiofun);
+  $stat .= "genes: $sample\nontology terms: $oboterm\n";
+  return (\%gene2biofun, \$stat);
 }
 
 sub map_OBOterm_between_release{
-    my ($obofile, $annfile, $classIndex)= @_;
-    my (%altid, %oldclass, %old2new, $header, $id, $fln, $pair, $stat, $pstat);
-    my ($alt, $classes, $seen, $unseen)= (0)x4;
-    ## step 0: pairing altid_2_id (key: alt_id)
-    if($obofile=~/.obo$/i){ open FH, "<", "$obofile" or die "cannot open $obofile. $!.\n"; }
-    while (<FH>){
-        chomp;
-        next if $_=~/^\s*$/;
-        if($_=~/^id:\s+(\D+\d+)/){ $id=$1; }
-        if($_=~/^alt_id:\s+(\D+\d+)/){ $altid{$1}=$id; }
+  my ($obofile, $annfile, $classIndex)= @_;
+  my (%altid, %oldclass, %old2new, $header, $id, $fln, $pair, $stat, $pstat);
+  my ($alt, $classes, $seen, $unseen)= (0)x4;
+  ## step 0: pairing altid_2_id (key: alt_id)
+  if($obofile=~/.obo$/i){ open FH, "<", "$obofile" or die "cannot open $obofile. $!.\n"; }
+  while (<FH>){
+    chomp;
+    next if $_=~/^\s*$/;
+    if($_=~/^id:\s+(\D+\d+)/){ $id=$1; }
+    if($_=~/^alt_id:\s+(\D+\d+)/){ $altid{$1}=$id; }
+  }
+  close FH;
+  $alt= keys(%altid);
+  # step 1: storing old ontology terms in a hash
+  if($annfile=~/.gz$/i){ open FH, "<:gzip", $annfile or die "cannot open $annfile. $!.\n"; } else { open FH, "<", "$annfile" or die "cannot open $annfile. $!.\n"; }
+  while(<FH>){
+    chomp;
+    if($_=~/^[!,#]|^\s*$/){ $header .= "$_\n"; }
+    next if $_=~/^[!,#]|^\s*$/;
+    my @vals=split(/\t/,$_);
+    $oldclass{$vals[$classIndex]}=$vals[$classIndex];
+  }
+  close FH;
+  $classes= keys(%oldclass);
+  ## step 2: mapping old GO terms to the new one using *alt_id* as key
+  my $tmp= "";
+  foreach my $k (sort{$a cmp $b} keys(%altid)){
+    if($oldclass{$k}){
+      $old2new{$k}=$altid{$oldclass{$k}};  ## pairing
+      $seen++;
+      $tmp= $altid{$oldclass{$k}};
+    }else{
+      $tmp= "unseen";
+      $unseen++;
     }
-    close FH;
-    $alt= keys(%altid);
-    # step 1: storing old ontology terms in a hash
-    if($annfile=~/.gz$/i){ open FH, "<:gzip", $annfile or die "cannot open $annfile. $!.\n"; } else { open FH, "<", "$annfile" or die "cannot open $annfile. $!.\n"; }
-    while(<FH>){
-        chomp;
-        if($_=~/^[!,#]|^\s*$/){ $header .= "$_\n"; }
-        next if $_=~/^[!,#]|^\s*$/;
-        my @vals=split(/\t/,$_);
-        $oldclass{$vals[$classIndex]}=$vals[$classIndex];
+    if($tmp ne "unseen"){
+      $pair .= "$k\t$altid{$oldclass{$k}}\n";
     }
-    close FH;
-    $classes= keys(%oldclass);
-    ## step 2: mapping old GO terms to the new one using *alt_id* as key
-    my $tmp= "";
-    foreach my $k (sort{$a cmp $b} keys(%altid)){
-        if($oldclass{$k}){
-            $old2new{$k}=$altid{$oldclass{$k}};  ## pairing
-            $seen++;
-            $tmp= $altid{$oldclass{$k}};
-        }else{
-            $tmp= "unseen";
-            $unseen++;
-        }
-        if($tmp ne "unseen"){
-            $pair .= "$k\t$altid{$oldclass{$k}}\n";
-        }
+  }
+  ## step 3: substitute ALT-ID with the updated ID, then the annotation file is returned.
+  if($annfile=~/.gz$/i){ open FH, "<:gzip", $annfile or die "cannot open $annfile. $!.\n"; } else { open FH, "<", "$annfile" or die "cannot open $annfile. $!.\n"; }
+  while(<FH>){
+    chomp;
+    next if $_=~/^[!,#]|^\s*$/;
+    my @vals= split(/\t/, $_);
+    my $oboterm= $vals[$classIndex];
+    if($old2new{$oboterm}){
+      $oboterm= $old2new{$oboterm};
+      $_=~ s/$vals[$classIndex]/$oboterm/g;
+      $fln .= "$_\n";
+    }else{
+      $fln .= "$_\n";
     }
-    ## step 3: substitute ALT-ID with the updated ID, then the annotation file is returned.
-    if($annfile=~/.gz$/i){ open FH, "<:gzip", $annfile or die "cannot open $annfile. $!.\n"; } else { open FH, "<", "$annfile" or die "cannot open $annfile. $!.\n"; }
-    while(<FH>){
-        chomp;
-        next if $_=~/^[!,#]|^\s*$/;
-        my @vals= split(/\t/, $_);
-        my $oboterm= $vals[$classIndex];
-        if($old2new{$oboterm}){
-            $oboterm= $old2new{$oboterm};
-            $_=~ s/$vals[$classIndex]/$oboterm/g;
-            $fln .= "$_\n";
-        }else{
-            $fln .= "$_\n";
-        }
-    }
-    close FH;
-    if(defined $header){$fln = $header.$fln;}
-    ## print mapping stat
-    $stat .= "Tot. ontology terms:\t$classes\nTot. altID:\t$alt\nTot. altID seen:\t$seen\nTot. altID unseen:\t$unseen\n";
-    unless(not defined $pair){
-        $pstat .= "#alt-id <tab> id\n$pair\n$stat";
-        return (\$fln, \$pstat);
-    }
-    return (\$fln, \$stat);
+  }
+  close FH;
+  if(defined $header){$fln = $header.$fln;}
+  ## print mapping stat
+  $stat .= "Tot. ontology terms:\t$classes\nTot. altID:\t$alt\nTot. altID seen:\t$seen\nTot. altID unseen:\t$unseen\n";
+  unless(not defined $pair){
+    $pstat .= "#alt-id <tab> id\n$pair\n$stat";
+    return (\$fln, \$pstat);
+  }
+  return (\$fln, \$stat);
 }
 
 1;
@@ -317,7 +317,7 @@ shown in L<GOA website|https://www.ebi.ac.uk/GOA/downloads> and L<HPO website|ht
 
 =item build_edges - extract edges from an obo file.
 
-    my $graph= build_edges(obofile);
+  my $graph= build_edges(obofile);
 
 B<obofile>: any obo file listed in L<OBO foundry|http://www.obofoundry.org/>. The file extension must be ".obo".
 
@@ -325,7 +325,7 @@ B<output>: the graph is returned as tuple: C<subdomain E<lt>tabE<gt> source-ID E
 
 =item build_subonto - extract edges of a specified sub-ontology domain.
 
-    my $subonto= build_subonto(edgesfile, namespace);
+  my $subonto= build_subonto(edgesfile, namespace);
 
 B<edgesfile>: a graph in the form: C<subdomain E<lt>tabE<gt> source E<lt>tabE<gt> destination E<lt>tabE<gt> relationship E<lt>tabE<gt> source-name E<lt>tabE<gt> destination-name>. This file can be obtained by calling the subroutine C<build_edges>. NB: to run this subroutine, the fields C<relationship>, C<source-name> and C<destination-name> are optionals. Instead, the field C<subdomain> is required and must be placed at the first column, otherwise an error message is returned.
 
@@ -336,7 +336,7 @@ C<is_a> and C<part_of> are also returned. The graph is stored as an anonymous sc
 
 =item make_stat - make basic statistic on graph.
 
-    my $stat= make_stat(edgesfile, parentIndex, childIndex);
+  my $stat= make_stat(edgesfile, parentIndex, childIndex);
 
 B<edgesfile>: a graph represented as a list of edges, where each edge is stored as a pair of vertices E<lt>tabE<gt> separated. This file can be obtained by calling the subroutine C<build_edges>.
 
@@ -349,7 +349,7 @@ statistics are returned as well: 1) number of nodes and edges of the graph; 2) m
 
 =item get_parents_or_children_list - build parents or children list for each node of the graph.
 
-    my $parORchdlist= get_parents_or_children_list(edgesfile, parentIndex, childIndex, parORchd);
+  my $parORchdlist= get_parents_or_children_list(edgesfile, parentIndex, childIndex, parORchd);
 
 B<edgesfile>: a graph represented as a list of edges, where each edge is stored as a pair of vertices E<lt>tabE<gt> separated. This file can be obtained by calling the subroutine C<build_edges>.
 
@@ -363,7 +363,7 @@ B<output>: an anonymous hash storing for each node of the graph the list of its 
 
 =item obo_filter - prune obo file
 
-    $newobo= obo_filter(obofile, termsfile);
+  $newobo= obo_filter(obofile, termsfile);
 
 B<obofile>: any obo file listed in L<OBO foundry|http://www.obofoundry.org/>. The file extension must be ".obo".
 
@@ -373,7 +373,7 @@ B<output>: an anonymous scalar storing the terms listed in the file B<termsfile>
 
 =item gene2biofun - make annotations adjacency list.
 
-    my ($res, $stat)= gene2biofun(annfile, geneIndex, classIndex);
+  my ($res, $stat)= gene2biofun(annfile, geneIndex, classIndex);
 
 B<annfile>: an annotations file. The file extension can be either plain format (".txt") or compressed (".gz"). An example of the format of this file can be taken from L<GOA website|ftp://ftp.ebi.ac.uk/pub/databases/GO/goa/> (file with ".gaf.gz" extension) or L<HPO website|http://compbio.charite.de/jenkins/job/hpo.annotations.monthly/lastSuccessfulBuild/artifact/annotation/ALL_SOURCES_ALL_FREQUENCIES_genes_to_phenotype.txt>.
 More in general any file structured as those aforementioned can be used (basically a ".csv" file using <tab> as separator).
@@ -386,7 +386,7 @@ B<output>: a list of two anonymous references. The first is an anonymous hash st
 
 =item map_OBOterm_between_release - map ontology terms between different releases.
 
-    my ($res, $stat)= map_OBOterm_between_release(obofile, annfile, classIndex);
+  my ($res, $stat)= map_OBOterm_between_release(obofile, annfile, classIndex);
 
 B<obofile>: an obo file (a new release). This file is used to make the C<alt_id - id> pairing, by using C<alt_id> as key. The file extension must be ".obo".
 

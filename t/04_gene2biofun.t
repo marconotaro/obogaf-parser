@@ -37,8 +37,8 @@ my $gafheader= "t/data/test_goa_chicken_header.gaf";
 open $fh, ">", $gafheader;
 open FH, "<", $gafile;
 while(<FH>){
-    if($.<2){print $fh "!\n#header gaf file\n \n";}
-    print $fh $_;
+  if($.<2){print $fh "!\n#header gaf file\n \n";}
+  print $fh $_;
 }
 close FH;
 close $fh;

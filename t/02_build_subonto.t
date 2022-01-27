@@ -37,9 +37,9 @@ my $gobp_header= "t/data/test_gobasic_edges_header.txt";
 open $fh, ">", $gobp_header;
 open FH, "<", $goedges;
 while(<FH>){
-    if($.<2){print $fh "!header\n"}
-    my @vals= split(/\t/,$_);
-    print $fh join("\t", @vals[1..$#vals]);
+  if($.<2){print $fh "!header\n"}
+  my @vals= split(/\t/,$_);
+  print $fh join("\t", @vals[1..$#vals]);
 }
 close FH;
 close $fh;

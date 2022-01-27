@@ -31,8 +31,8 @@ my $gobo_hack= "t/data/test_gobasic_no_namespace.obo";
 open $fh, ">", $gobo_hack;
 open FH, "<", $obofile;
 while(<FH>){
-    next if /^namespace:/;
-    print $fh $_;
+  next if /^namespace:/;
+  print $fh $_;
 }
 close FH;
 close $fh;

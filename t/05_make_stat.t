@@ -44,7 +44,7 @@ my $goedges_stat= "t/data/test_gobasic_edges_stat.txt";
 open $fh, ">", $goedges_stat;
 open FH, "<", $goedges;
 while(<FH>){
-    if($.==1){print $fh $_} else {next;}
+  if($.==1){print $fh $_} else {next;}
 }
 close FH;
 close $fh;

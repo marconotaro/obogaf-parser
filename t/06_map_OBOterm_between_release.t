@@ -46,8 +46,8 @@ my $gafheader= "t/data/test_goa_chicken_128_header.gaf";
 open $fh, ">", $gafheader;
 open FH, "<", $gafold;
 while(<FH>){
-    if($.<2){print $fh "! header gaf file\n!\n";}
-    print $fh $_;
+  if($.<2){print $fh "! header gaf file\n!\n";}
+  print $fh $_;
 }
 close FH;
 close $fh;
@@ -69,8 +69,8 @@ my $gafunpair= "t/data/test_goa_chicken_128_unpair.gaf";
 open $fh, ">", $gafunpair;
 open FH, "<", $gafold;
 while(<FH>){
-    my @vals=split(/\t/,$_);
-    if($vals[4] eq "GO:0042503" || $vals[4] eq "GO:0042506"){next;} else { print $fh $_; }
+  my @vals=split(/\t/,$_);
+  if($vals[4] eq "GO:0042503" || $vals[4] eq "GO:0042506"){next;} else { print $fh $_; }
 }
 close FH;
 close $fh;
